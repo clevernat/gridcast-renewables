@@ -51,16 +51,16 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
-/* Input text color - modern blue matching website gradient theme */
+/* Input text color - black for maximum visibility */
 input[type="text"],
 input[type="number"],
 input[type="email"],
 input[type="password"],
 textarea,
 select {
-  color: #3b82f6 !important; /* blue-500 - matches website gradient, vibrant and modern */
-  -webkit-text-fill-color: #3b82f6 !important; /* Override webkit autofill */
-  caret-color: #3b82f6 !important; /* blue-500 - matches text color */
+  color: #000000 !important; /* Pure black - maximum visibility */
+  -webkit-text-fill-color: #000000 !important; /* Override webkit autofill */
+  caret-color: #3b82f6 !important; /* blue-500 - visible cursor */
   background-color: #ffffff !important; /* Pure white background */
   background: #ffffff !important; /* Ensure white background */
   font-weight: 500;
@@ -72,7 +72,7 @@ input[type="number"]:-webkit-autofill,
 input[type="email"]:-webkit-autofill,
 input[type="password"]:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-  -webkit-text-fill-color: #3b82f6 !important;
+  -webkit-text-fill-color: #000000 !important;
   background-color: #ffffff !important;
   background: #ffffff !important;
 }
@@ -83,9 +83,9 @@ input[type="email"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-  color: #2563eb !important; /* blue-600 - slightly darker when focused */
-  -webkit-text-fill-color: #2563eb !important;
-  caret-color: #2563eb !important; /* blue-600 - matches focused text */
+  color: #000000 !important; /* Keep black when focused */
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #3b82f6 !important; /* blue cursor when focused */
   background-color: #ffffff !important; /* Keep white background when focused */
   background: #ffffff !important;
 }
