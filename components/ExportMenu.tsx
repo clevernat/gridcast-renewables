@@ -56,6 +56,29 @@ export default function ExportMenu({
     }
   };
 
+  const handleDownloadBatchTemplate = () => {
+    const templateCSV = `name,latitude,longitude,type,capacity
+Phoenix Solar,33.4484,-112.0740,solar,10
+Texas Wind,32.4707,-100.4065,wind,2.5
+California Solar,37.7749,-122.4194,solar,7
+Denver Solar,39.7392,-104.9903,solar,12
+Seattle Solar,47.6062,-122.3321,solar,8
+Miami Solar,25.7617,-80.1918,solar,20
+Chicago Wind,41.8781,-87.6298,wind,3.0
+Portland Solar,45.5152,-122.6784,solar,9
+Boston Solar,42.3601,-71.0589,solar,11
+Atlanta Solar,33.7490,-84.3880,solar,15`;
+
+    const blob = new Blob([templateCSV], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `batch_analysis_template.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setIsOpen(false);
+  };
+
   const handleDownloadScreenshot = async () => {
     setDownloading(true);
     try {
@@ -316,6 +339,22 @@ export default function ExportMenu({
 
               {/* Divider */}
               <div className="border-t border-gray-200 my-2" />
+
+              {/* Batch Analysis Template */}
+              <button
+                onClick={handleDownloadBatchTemplate}
+                className="w-full text-left px-3 py-2 rounded-lg hover:bg-purple-50 transition-colors flex items-center gap-3 text-sm"
+              >
+                <span className="text-lg">📊</span>
+                <div>
+                  <div className="font-semibold text-gray-900">
+                    Batch Analysis Template
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    CSV template for multi-location
+                  </div>
+                </div>
+              </button>
 
               {/* Print */}
               <button
