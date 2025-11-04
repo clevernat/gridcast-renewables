@@ -38,7 +38,7 @@ export default function AnalyticsDashboard({
     : [];
 
   return (
-    <div className="space-y-6">
+    <div id="analytics-dashboard" className="space-y-6">
       {/* Header */}
       <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
         <div className="flex items-center justify-between mb-4">

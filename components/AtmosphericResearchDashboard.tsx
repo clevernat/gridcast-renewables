@@ -17,8 +17,10 @@ interface AtmosphericResearchDashboardProps {
 export default function AtmosphericResearchDashboard({
   forecast,
 }: AtmosphericResearchDashboardProps) {
-  const [researchData, setResearchData] = useState<AtmosphericResearchData | null>(null);
-  const [selectedVariable, setSelectedVariable] = useState<string>("temperature");
+  const [researchData, setResearchData] =
+    useState<AtmosphericResearchData | null>(null);
+  const [selectedVariable, setSelectedVariable] =
+    useState<string>("temperature");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -49,7 +51,9 @@ export default function AtmosphericResearchDashboard({
           Generate a forecast to access comprehensive atmospheric research tools
         </p>
         <div className="bg-white p-4 rounded-xl text-left max-w-2xl mx-auto">
-          <h4 className="font-semibold text-gray-900 mb-2">Research Capabilities:</h4>
+          <h4 className="font-semibold text-gray-900 mb-2">
+            Research Capabilities:
+          </h4>
           <ul className="text-sm text-gray-700 space-y-1">
             <li>✓ Statistical analysis (mean, median, std dev, percentiles)</li>
             <li>✓ Correlation matrices with significance testing</li>
@@ -73,11 +77,15 @@ export default function AtmosphericResearchDashboard({
   }
 
   const stats = researchData.statistics[selectedVariable];
-  const trend = researchData.trends?.find((t) => t.variable === selectedVariable);
-  const anomalies = researchData.anomalies?.filter((a) => a.variable === selectedVariable) || [];
+  const trend = researchData.trends?.find(
+    (t) => t.variable === selectedVariable
+  );
+  const anomalies =
+    researchData.anomalies?.filter((a) => a.variable === selectedVariable) ||
+    [];
 
   return (
-    <div className="space-y-6">
+    <div id="research-dashboard" className="space-y-6">
       {/* Data Quality Overview */}
       <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-2xl shadow-xl border border-green-200">
         <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -93,7 +101,8 @@ export default function AtmosphericResearchDashboard({
           <div className="bg-white p-4 rounded-xl">
             <p className="text-sm text-gray-600 mb-1">Complete Records</p>
             <p className="text-3xl font-bold text-blue-700">
-              {researchData.dataQuality.completeRecords}/{researchData.dataQuality.totalRecords}
+              {researchData.dataQuality.completeRecords}/
+              {researchData.dataQuality.totalRecords}
             </p>
           </div>
           <div className="bg-white p-4 rounded-xl">
@@ -113,7 +122,9 @@ export default function AtmosphericResearchDashboard({
 
       {/* Variable Selector */}
       <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Select Variable for Analysis</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">
+          Select Variable for Analysis
+        </h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {Object.keys(researchData.statistics).map((varName) => (
             <button
@@ -140,15 +151,21 @@ export default function AtmosphericResearchDashboard({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Mean</p>
-              <p className="text-2xl font-bold text-purple-700">{stats.mean.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-purple-700">
+                {stats.mean.toFixed(2)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Median</p>
-              <p className="text-2xl font-bold text-purple-700">{stats.median.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-purple-700">
+                {stats.median.toFixed(2)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Std Dev</p>
-              <p className="text-2xl font-bold text-purple-700">{stats.stdDev.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-purple-700">
+                {stats.stdDev.toFixed(2)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Range</p>
@@ -158,15 +175,21 @@ export default function AtmosphericResearchDashboard({
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">25th Percentile</p>
-              <p className="text-2xl font-bold text-indigo-700">{stats.percentile25.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-indigo-700">
+                {stats.percentile25.toFixed(2)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">75th Percentile</p>
-              <p className="text-2xl font-bold text-indigo-700">{stats.percentile75.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-indigo-700">
+                {stats.percentile75.toFixed(2)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">95th Percentile</p>
-              <p className="text-2xl font-bold text-indigo-700">{stats.percentile95.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-indigo-700">
+                {stats.percentile95.toFixed(2)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Data Points</p>
@@ -188,17 +211,25 @@ export default function AtmosphericResearchDashboard({
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Trend Direction</p>
               <p className="text-2xl font-bold text-blue-700 capitalize">
-                {trend.trend === "increasing" ? "↗️ " : trend.trend === "decreasing" ? "↘️ " : "→ "}
+                {trend.trend === "increasing"
+                  ? "↗️ "
+                  : trend.trend === "decreasing"
+                  ? "↘️ "
+                  : "→ "}
                 {trend.trend}
               </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Slope</p>
-              <p className="text-2xl font-bold text-blue-700">{trend.slope.toExponential(2)}</p>
+              <p className="text-2xl font-bold text-blue-700">
+                {trend.slope.toExponential(2)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">R² (Fit Quality)</p>
-              <p className="text-2xl font-bold text-blue-700">{trend.rSquared.toFixed(3)}</p>
+              <p className="text-2xl font-bold text-blue-700">
+                {trend.rSquared.toFixed(3)}
+              </p>
             </div>
             <div className="bg-white p-4 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">P-Value</p>
@@ -206,7 +237,9 @@ export default function AtmosphericResearchDashboard({
                 {trend.pValue < 0.001 ? "<0.001" : trend.pValue.toFixed(3)}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                {trend.pValue < 0.05 ? "Statistically significant" : "Not significant"}
+                {trend.pValue < 0.05
+                  ? "Statistically significant"
+                  : "Not significant"}
               </p>
             </div>
           </div>
@@ -217,7 +250,8 @@ export default function AtmosphericResearchDashboard({
       {anomalies.length > 0 && (
         <div className="bg-gradient-to-br from-red-50 to-orange-100 p-6 rounded-2xl shadow-xl border border-red-200">
           <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span>⚠️</span> Anomalies Detected: {selectedVariable} ({anomalies.length})
+            <span>⚠️</span> Anomalies Detected: {selectedVariable} (
+            {anomalies.length})
           </h3>
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {anomalies.slice(0, 10).map((anomaly, idx) => (
@@ -241,7 +275,8 @@ export default function AtmosphericResearchDashboard({
                 </div>
                 <div className="text-sm text-gray-700 mt-1">
                   Value: <strong>{anomaly.value.toFixed(2)}</strong> (Expected:{" "}
-                  {anomaly.expectedValue.toFixed(2)}, Deviation: {anomaly.deviation.toFixed(1)}σ)
+                  {anomaly.expectedValue.toFixed(2)}, Deviation:{" "}
+                  {anomaly.deviation.toFixed(1)}σ)
                 </div>
               </div>
             ))}
@@ -293,12 +328,11 @@ export default function AtmosphericResearchDashboard({
             </table>
           </div>
           <p className="text-xs text-gray-600 mt-2">
-            Green: Strong positive correlation (r &gt; 0.7) | Red: Strong negative correlation (r
-            &lt; -0.7)
+            Green: Strong positive correlation (r &gt; 0.7) | Red: Strong
+            negative correlation (r &lt; -0.7)
           </p>
         </div>
       )}
     </div>
   );
 }
-

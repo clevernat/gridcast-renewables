@@ -22,6 +22,10 @@ import {
 } from "@/lib/utils/pdfExport";
 import { generateAtmosphericResearchDOCX } from "@/lib/utils/docxExport";
 import { generateAtmosphericResearchData } from "@/lib/utils/atmosphericResearch";
+import {
+  exportAllImagesAsZip,
+  exportMapAnimationAsZip,
+} from "@/lib/utils/imageExport";
 
 interface ExportMenuProps {
   forecast?: PowerForecast | null;
@@ -89,6 +93,40 @@ Atlanta Solar,33.7490,-84.3880,solar,15`;
     } catch (err) {
       console.error("Failed to download screenshot:", err);
       alert("Failed to capture screenshot. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleExportAllImages = async () => {
+    setDownloading(true);
+    try {
+      await exportAllImagesAsZip(forecast, longTerm, activeTab);
+      setIsOpen(false);
+    } catch (err) {
+      console.error("Failed to export images:", err);
+      alert(
+        `Failed to export images as ZIP: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleExportMapAnimation = async () => {
+    setDownloading(true);
+    try {
+      await exportMapAnimationAsZip();
+      setIsOpen(false);
+    } catch (err) {
+      console.error("Failed to export map animation:", err);
+      alert(
+        `Failed to export map animation: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
     } finally {
       setDownloading(false);
     }
@@ -336,6 +374,44 @@ Atlanta Solar,33.7490,-84.3880,solar,15`;
                   <div className="text-xs text-gray-500">PNG image</div>
                 </div>
               </button>
+
+              {/* Export All Images as ZIP */}
+              <button
+                onClick={handleExportAllImages}
+                disabled={downloading}
+                className="w-full text-left px-3 py-2 rounded-lg hover:bg-purple-50 transition-colors flex items-center gap-3 text-sm disabled:opacity-50"
+              >
+                <span className="text-lg">🗜️</span>
+                <div>
+                  <div className="font-semibold text-gray-900">
+                    {downloading ? "Exporting..." : "Export All Images (ZIP)"}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    All charts, maps & analytics
+                  </div>
+                </div>
+              </button>
+
+              {/* Export Map Animation */}
+              {activeTab === "map" && (
+                <button
+                  onClick={handleExportMapAnimation}
+                  disabled={downloading}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors flex items-center gap-3 text-sm disabled:opacity-50"
+                >
+                  <span className="text-lg">🎬</span>
+                  <div>
+                    <div className="font-semibold text-gray-900">
+                      {downloading
+                        ? "Capturing Frames..."
+                        : "Export Map Animation (ZIP)"}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      24 hourly frames
+                    </div>
+                  </div>
+                </button>
+              )}
 
               {/* Divider */}
               <div className="border-t border-gray-200 my-2" />
