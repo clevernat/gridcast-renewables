@@ -50,3 +50,8 @@ STEM OPT/
 *.png
 *.jpeg
 *.qxfl
+
+# Exception: Allow screenshots in docs directory
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg

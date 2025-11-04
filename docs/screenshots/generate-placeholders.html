@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenshot Placeholder Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .placeholder {
+            width: 1920px;
+            height: 1080px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: scale(0.5);
+            transform-origin: top left;
+        }
+        .placeholder h1 {
+            color: white;
+            font-size: 96px;
+            margin: 0;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .placeholder p {
+            color: rgba(255,255,255,0.9);
+            font-size: 48px;
+            margin: 20px 0 0 0;
+            text-align: center;
+        }
+        .icon {
+            font-size: 200px;
+            margin-bottom: 40px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="instructions">
+            <h2>📸 Screenshot Placeholder Generator</h2>
+            <p>This page generates placeholder images for the GridCast Renewables README.</p>
+            <p><strong>Instructions:</strong></p>
+            <ol>
+                <li>Open this HTML file in your browser</li>
+                <li>Right-click on each placeholder below</li>
+                <li>Select "Save Image As..." or take a screenshot</li>
+                <li>Save with the corresponding filename in the <code>docs/screenshots/</code> directory</li>
+            </ol>
+            <p><strong>Or better yet:</strong> Take real screenshots of the application following the guide in <code>docs/screenshots/README.md</code></p>
+        </div>
+
+        <!-- Asset Configuration Placeholder -->
+        <div id="asset-config" class="placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="icon">⚙️</div>
+            <h1>Asset Configuration</h1>
+            <p>Screenshot Coming Soon</p>
+        </div>
+
+        <!-- Forecast Chart Placeholder -->
+        <div id="forecast-chart" class="placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="icon">📊</div>
+            <h1>48-Hour Power Forecast</h1>
+            <p>Screenshot Coming Soon</p>
+        </div>
+
+        <!-- National Map Placeholder -->
+        <div id="national-map" class="placeholder" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="icon">🗺️</div>
+            <h1>National Energy Map</h1>
+            <p>Screenshot Coming Soon</p>
+        </div>
+
+        <!-- Long-Term Analysis Placeholder -->
+        <div id="long-term" class="placeholder" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="icon">📈</div>
+            <h1>Long-Term Viability Analysis</h1>
+            <p>Screenshot Coming Soon</p>
+        </div>
+
+        <div class="instructions">
+            <h3>Quick Screenshot Guide:</h3>
+            <ul>
+                <li><strong>macOS:</strong> Cmd + Shift + 4, then drag to select each placeholder</li>
+                <li><strong>Windows:</strong> Windows + Shift + S, then select each placeholder</li>
+                <li><strong>Linux:</strong> Use your screenshot tool to capture each placeholder</li>
+            </ul>
+            <p>Save the screenshots with these exact filenames:</p>
+            <ul>
+                <li><code>asset-config.png</code></li>
+                <li><code>forecast-chart.png</code></li>
+                <li><code>national-map.png</code></li>
+                <li><code>long-term-analysis.png</code></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+

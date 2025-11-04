@@ -95,6 +95,66 @@ Power Curve (Four Regions):
 
 ## 🏗️ Technical Architecture
 
+### System Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        UI[User Interface<br/>Next.js 16 + TypeScript]
+        ACF[AssetConfigForm<br/>Location & Asset Input]
+        PFC[PowerForecastChart<br/>ECharts Visualization]
+        NEM[NationalEnergyMap<br/>Mapbox GL JS]
+        LTA[LongTermAnalysis<br/>Historical Data View]
+    end
+
+    subgraph "API Layer - Next.js Routes"
+        GEO[/api/geocode<br/>Address → Coordinates]
+        FC[/api/forecast<br/>48-Hour Power Forecast]
+        LT[/api/long-term<br/>Historical Analysis]
+        NM[/api/national-map<br/>Grid Data Generation]
+    end
+
+    subgraph "Business Logic"
+        WC[Weather Client<br/>API Integration]
+        SM[Solar Model<br/>NREL PVWatts]
+        WM[Wind Model<br/>Power Law + Curve]
+    end
+
+    subgraph "External APIs"
+        NOM[Nominatim API<br/>OpenStreetMap Geocoding]
+        OM[Open-Meteo API<br/>Weather Forecast & Historical]
+        NASA[NASA POWER API<br/>Solar & Meteorological Data]
+        MB[Mapbox API<br/>Map Tiles & Rendering]
+    end
+
+    UI --> ACF
+    UI --> PFC
+    UI --> NEM
+    UI --> LTA
+
+    ACF --> GEO
+    ACF --> FC
+    ACF --> LT
+    NEM --> NM
+
+    GEO --> WC
+    FC --> WC
+    LT --> WC
+    NM --> WC
+
+    WC --> SM
+    WC --> WM
+
+    GEO --> NOM
+    WC --> OM
+    WC --> NASA
+    NEM --> MB
+```
+
+**[📄 View Detailed Architecture Documentation](docs/architecture.md)**
+
+### Technology Stack
+
 **Frontend:**
 
 - Next.js 16.0 with App Router
@@ -112,7 +172,7 @@ Power Curve (Four Regions):
 
 - Open-Meteo API (weather forecasts & historical data)
 - NASA POWER API (solar & meteorological data)
-- Open-Meteo Geocoding API
+- Nominatim API (geocoding)
 
 **Deployment:**
 
@@ -178,6 +238,65 @@ npm start
 - Location: Sweetwater, TX (32.4707°N, 100.4065°W)
 - Rated Capacity: 2.5 MW, Hub Height: 100m
 - Expected: 35-40% capacity factor, 7,500-8,500 MWh/year
+
+## 📸 Screenshots & Demo
+
+### 1. Asset Configuration Interface
+
+![Asset Configuration](docs/screenshots/asset-config.png)
+
+**Features Shown:**
+
+- Address geocoding with automatic coordinate conversion
+- Solar/Wind asset type selection
+- System parameter inputs (DC capacity, hub height, etc.)
+- Clean, intuitive form design
+
+### 2. 48-Hour Power Forecast
+
+![Power Forecast Chart](docs/screenshots/forecast-chart.png)
+
+**Features Shown:**
+
+- Hourly power output predictions (kWh/MWh)
+- Meteorological drivers (solar irradiance, wind speed, cloud cover)
+- Interactive ECharts visualization
+- Capacity factor calculation
+- Time-series analysis
+
+### 3. National Energy Map
+
+![National Energy Map](docs/screenshots/national-map.png)
+
+**Features Shown:**
+
+- Heatmap visualization across continental U.S.
+- Toggle between Solar and Wind potential views
+- 24-hour time slider animation
+- Real-time energy potential calculation
+- Mapbox GL JS rendering
+
+### 4. Long-Term Viability Analysis
+
+![Long-Term Analysis](docs/screenshots/long-term-analysis.png)
+
+**Features Shown:**
+
+- Monthly average energy production
+- Annual production totals
+- Historical weather data analysis (5+ years)
+- Investment viability metrics
+- Seasonal variation insights
+
+### 🎥 Live Demo
+
+**Coming Soon:** Live deployment URL will be added after Vercel deployment
+
+**Try it yourself:**
+
+1. Clone the repository
+2. Follow installation instructions below
+3. Run locally at `http://localhost:3000`
 
 ## 🎓 EB2-NIW Petition Documentation
 
