@@ -40,15 +40,15 @@ export function saveLocationToHistory(
   };
 
   const history = getLocationHistory();
-  
+
   // Remove duplicate if exists
   const filtered = history.filter((loc) => loc.id !== savedLocation.id);
-  
+
   // Add to beginning and limit to 20 items
   const updated = [savedLocation, ...filtered].slice(0, 20);
-  
+
   localStorage.setItem(STORAGE_KEYS.LOCATION_HISTORY, JSON.stringify(updated));
-  
+
   return savedLocation;
 }
 
@@ -78,12 +78,12 @@ export function clearLocationHistory(): void {
 export function toggleFavorite(locationId: string): boolean {
   const history = getLocationHistory();
   const location = history.find((loc) => loc.id === locationId);
-  
+
   if (!location) return false;
-  
+
   location.isFavorite = !location.isFavorite;
   localStorage.setItem(STORAGE_KEYS.LOCATION_HISTORY, JSON.stringify(history));
-  
+
   return location.isFavorite;
 }
 
@@ -97,13 +97,19 @@ export function getFavoriteLocations(): SavedLocation[] {
 /**
  * Update location nickname
  */
-export function updateLocationNickname(locationId: string, nickname: string): void {
+export function updateLocationNickname(
+  locationId: string,
+  nickname: string
+): void {
   const history = getLocationHistory();
   const location = history.find((loc) => loc.id === locationId);
-  
+
   if (location) {
     location.nickname = nickname;
-    localStorage.setItem(STORAGE_KEYS.LOCATION_HISTORY, JSON.stringify(history));
+    localStorage.setItem(
+      STORAGE_KEYS.LOCATION_HISTORY,
+      JSON.stringify(history)
+    );
   }
 }
 
@@ -120,10 +126,13 @@ export function deleteLocation(locationId: string): void {
  * Generate unique location ID
  */
 function generateLocationId(location: Location, asset: Asset): string {
-  const locStr = `${location.latitude.toFixed(4)}_${location.longitude.toFixed(4)}`;
-  const assetStr = asset.type === "solar" 
-    ? `solar_${asset.dcCapacity}_${asset.systemLosses}`
-    : `wind_${asset.ratedCapacity}_${asset.hubHeight}`;
+  const locStr = `${location.latitude.toFixed(4)}_${location.longitude.toFixed(
+    4
+  )}`;
+  const assetStr =
+    asset.type === "solar"
+      ? `solar_${asset.dcCapacity}_${asset.systemLosses}`
+      : `wind_${asset.ratedCapacity}_${asset.hubHeight}`;
   return `${locStr}_${assetStr}`;
 }
 
@@ -165,14 +174,17 @@ export function clearComparisonSlot(slotIndex: number): void {
  * Clear all comparison slots
  */
 export function clearAllComparisonSlots(): void {
-  localStorage.setItem(STORAGE_KEYS.COMPARISON_SLOTS, JSON.stringify([null, null, null]));
+  localStorage.setItem(
+    STORAGE_KEYS.COMPARISON_SLOTS,
+    JSON.stringify([null, null, null])
+  );
 }
 
 /**
  * User preferences
  */
 export interface UserPreferences {
-  darkMode: boolean;
+  theme: "light" | "dark";
   defaultAssetType: "solar" | "wind";
   defaultYears: number;
   showTooltips: boolean;
@@ -181,7 +193,7 @@ export interface UserPreferences {
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
-  darkMode: false,
+  theme: "light",
   defaultAssetType: "solar",
   defaultYears: 5,
   showTooltips: true,
@@ -195,7 +207,9 @@ const DEFAULT_PREFERENCES: UserPreferences = {
 export function getUserPreferences(): UserPreferences {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.PREFERENCES);
-    return data ? { ...DEFAULT_PREFERENCES, ...JSON.parse(data) } : DEFAULT_PREFERENCES;
+    return data
+      ? { ...DEFAULT_PREFERENCES, ...JSON.parse(data) }
+      : DEFAULT_PREFERENCES;
   } catch (err) {
     console.error("Failed to load preferences:", err);
     return DEFAULT_PREFERENCES;
@@ -205,7 +219,9 @@ export function getUserPreferences(): UserPreferences {
 /**
  * Update user preferences
  */
-export function updateUserPreferences(preferences: Partial<UserPreferences>): void {
+export function updateUserPreferences(
+  preferences: Partial<UserPreferences>
+): void {
   const current = getUserPreferences();
   const updated = { ...current, ...preferences };
   localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(updated));
@@ -215,20 +231,27 @@ export function updateUserPreferences(preferences: Partial<UserPreferences>): vo
  * Reset preferences to default
  */
 export function resetPreferences(): void {
-  localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(DEFAULT_PREFERENCES));
+  localStorage.setItem(
+    STORAGE_KEYS.PREFERENCES,
+    JSON.stringify(DEFAULT_PREFERENCES)
+  );
 }
 
 /**
  * Export all data (for backup)
  */
 export function exportAllData(): string {
-  return JSON.stringify({
-    history: getLocationHistory(),
-    favorites: getFavoriteLocations(),
-    comparison: getComparisonSlots(),
-    preferences: getUserPreferences(),
-    exportedAt: new Date().toISOString(),
-  }, null, 2);
+  return JSON.stringify(
+    {
+      history: getLocationHistory(),
+      favorites: getFavoriteLocations(),
+      comparison: getComparisonSlots(),
+      preferences: getUserPreferences(),
+      exportedAt: new Date().toISOString(),
+    },
+    null,
+    2
+  );
 }
 
 /**
@@ -237,19 +260,28 @@ export function exportAllData(): string {
 export function importAllData(jsonData: string): boolean {
   try {
     const data = JSON.parse(jsonData);
-    
+
     if (data.history) {
-      localStorage.setItem(STORAGE_KEYS.LOCATION_HISTORY, JSON.stringify(data.history));
+      localStorage.setItem(
+        STORAGE_KEYS.LOCATION_HISTORY,
+        JSON.stringify(data.history)
+      );
     }
-    
+
     if (data.comparison) {
-      localStorage.setItem(STORAGE_KEYS.COMPARISON_SLOTS, JSON.stringify(data.comparison));
+      localStorage.setItem(
+        STORAGE_KEYS.COMPARISON_SLOTS,
+        JSON.stringify(data.comparison)
+      );
     }
-    
+
     if (data.preferences) {
-      localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(data.preferences));
+      localStorage.setItem(
+        STORAGE_KEYS.PREFERENCES,
+        JSON.stringify(data.preferences)
+      );
     }
-    
+
     return true;
   } catch (err) {
     console.error("Failed to import data:", err);
@@ -260,7 +292,11 @@ export function importAllData(jsonData: string): boolean {
 /**
  * Get storage usage info
  */
-export function getStorageInfo(): { used: number; available: number; percentage: number } {
+export function getStorageInfo(): {
+  used: number;
+  available: number;
+  percentage: number;
+} {
   try {
     let used = 0;
     for (const key in localStorage) {
@@ -268,14 +304,13 @@ export function getStorageInfo(): { used: number; available: number; percentage:
         used += localStorage[key].length + key.length;
       }
     }
-    
+
     // Most browsers allow ~5-10MB, we'll assume 5MB
     const available = 5 * 1024 * 1024;
     const percentage = (used / available) * 100;
-    
+
     return { used, available, percentage };
   } catch (err) {
     return { used: 0, available: 0, percentage: 0 };
   }
 }
-

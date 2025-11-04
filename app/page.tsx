@@ -10,6 +10,7 @@ import LocationHistory from "@/components/LocationHistory";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import AtmosphericResearchDashboard from "@/components/AtmosphericResearchDashboard";
 import BatchAnalysis from "@/components/BatchAnalysis";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   Asset,
   Location,
@@ -119,6 +120,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
+              <ThemeToggle />
               <button
                 onClick={() => setShowHistory(!showHistory)}
                 className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5"
