@@ -69,8 +69,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-emerald-50">
-      {/* Modern Header with Glassmorphism */}
-      <header className="sticky top-0 z-50 backdrop-blur-lg bg-white/80 border-b border-gray-200/50 shadow-sm">
+      {/* Modern Header */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -120,8 +120,8 @@ export default function Home() {
 
           {/* Right Column - Results */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Modern Tabs with Glassmorphism */}
-            <div className="backdrop-blur-lg bg-white/90 rounded-2xl shadow-xl p-1.5 border border-gray-200/50">
+            {/* Modern Tabs */}
+            <div className="bg-white rounded-2xl shadow-xl p-1.5 border border-gray-200">
               <div className="grid grid-cols-3 gap-1.5">
                 <button
                   onClick={() => setActiveTab("forecast")}
@@ -163,7 +163,7 @@ export default function Home() {
                   {forecast ? (
                     <PowerForecastChart forecast={forecast} />
                   ) : (
-                    <div className="backdrop-blur-lg bg-white/90 p-12 sm:p-16 rounded-2xl shadow-xl border border-gray-200/50 text-center">
+                    <div className="bg-white p-12 sm:p-16 rounded-2xl shadow-xl border border-gray-200 text-center">
                       <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-blue-200 rounded-3xl flex items-center justify-center">
                         <span className="text-5xl">📊</span>
                       </div>
@@ -188,7 +188,7 @@ export default function Home() {
                   {longTermData ? (
                     <LongTermAnalysis analysis={longTermData} />
                   ) : (
-                    <div className="backdrop-blur-lg bg-white/90 p-12 sm:p-16 rounded-2xl shadow-xl border border-gray-200/50 text-center">
+                    <div className="bg-white p-12 sm:p-16 rounded-2xl shadow-xl border border-gray-200 text-center">
                       <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-emerald-100 to-teal-200 rounded-3xl flex items-center justify-center">
                         <span className="text-5xl">📈</span>
                       </div>
@@ -219,7 +219,7 @@ export default function Home() {
         </div>
 
         {/* Modern Info Cards */}
-        <div className="mt-12 backdrop-blur-lg bg-white/90 rounded-2xl shadow-xl border border-gray-200/50 p-6 sm:p-8">
+        <div className="mt-12 bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8">
           <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent mb-4">
             About GridCast Renewables
           </h3>

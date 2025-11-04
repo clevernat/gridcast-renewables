@@ -135,7 +135,7 @@ export default function AssetConfigForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 backdrop-blur-lg bg-white/90 p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200/50 sticky top-24"
+      className="space-y-6 bg-white p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 sticky top-24"
     >
       <div className="flex items-center gap-3 mb-2">
         <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-emerald-600 rounded-xl flex items-center justify-center">
