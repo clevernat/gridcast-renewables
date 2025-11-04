@@ -51,15 +51,15 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
-/* Input text color - black for maximum visibility */
+/* Input text color - matches app's text-gray-800 (#1f2937) */
 input[type="text"],
 input[type="number"],
 input[type="email"],
 input[type="password"],
 textarea,
 select {
-  color: #000000 !important; /* Pure black - maximum visibility */
-  -webkit-text-fill-color: #000000 !important; /* Override webkit autofill */
+  color: #1f2937 !important; /* gray-800 - matches headings and app text */
+  -webkit-text-fill-color: #1f2937 !important; /* Override webkit autofill */
   caret-color: #3b82f6 !important; /* blue-500 - visible cursor */
   background-color: #ffffff !important; /* Pure white background */
   background: #ffffff !important; /* Ensure white background */
@@ -72,7 +72,7 @@ input[type="number"]:-webkit-autofill,
 input[type="email"]:-webkit-autofill,
 input[type="password"]:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-fill-color: #1f2937 !important;
   background-color: #ffffff !important;
   background: #ffffff !important;
 }
@@ -83,8 +83,8 @@ input[type="email"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-  color: #000000 !important; /* Keep black when focused */
-  -webkit-text-fill-color: #000000 !important;
+  color: #1f2937 !important; /* Keep gray-800 when focused */
+  -webkit-text-fill-color: #1f2937 !important;
   caret-color: #3b82f6 !important; /* blue cursor when focused */
   background-color: #ffffff !important; /* Keep white background when focused */
   background: #ffffff !important;

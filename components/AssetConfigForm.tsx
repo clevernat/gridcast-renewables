@@ -190,8 +190,8 @@ export default function AssetConfigForm({
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="e.g., 1600 Amphitheatre Parkway, Mountain View, CA"
-                className="flex-1 px-4 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-                style={{ color: "#000000", backgroundColor: "#ffffff" }}
+                className="flex-1 px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+                style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               />
               <button
                 type="button"
@@ -238,8 +238,8 @@ export default function AssetConfigForm({
               value={latitude}
               onChange={(e) => setLatitude(e.target.value)}
               placeholder="e.g., 37.4224764"
-              className="w-full px-4 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-              style={{ color: "#000000", backgroundColor: "#ffffff" }}
+              className="w-full px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+              style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               required
             />
           </div>
@@ -253,8 +253,8 @@ export default function AssetConfigForm({
               value={longitude}
               onChange={(e) => setLongitude(e.target.value)}
               placeholder="e.g., -122.0842499"
-              className="w-full px-4 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-              style={{ color: "#000000", backgroundColor: "#ffffff" }}
+              className="w-full px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+              style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               required
             />
           </div>
@@ -318,8 +318,8 @@ export default function AssetConfigForm({
               value={dcCapacity}
               onChange={(e) => setDcCapacity(e.target.value)}
               placeholder="e.g., 7"
-              className="w-full px-4 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all text-sm"
-              style={{ color: "#000000", backgroundColor: "#ffffff" }}
+              className="w-full px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all text-sm"
+              style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
             />
             <p className="mt-2 text-xs text-gray-600 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
@@ -336,8 +336,8 @@ export default function AssetConfigForm({
               value={systemLosses}
               onChange={(e) => setSystemLosses(e.target.value)}
               placeholder="e.g., 14"
-              className="w-full px-4 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all text-sm"
-              style={{ color: "#000000", backgroundColor: "#ffffff" }}
+              className="w-full px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all text-sm"
+              style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
             />
             <p className="mt-2 text-xs text-gray-600 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
@@ -364,8 +364,8 @@ export default function AssetConfigForm({
                 value={ratedCapacity}
                 onChange={(e) => setRatedCapacity(e.target.value)}
                 placeholder="e.g., 1.5"
-                className="w-full px-4 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-                style={{ color: "#000000", backgroundColor: "#ffffff" }}
+                className="w-full px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+                style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               />
             </div>
             <div>
@@ -378,8 +378,8 @@ export default function AssetConfigForm({
                 value={hubHeight}
                 onChange={(e) => setHubHeight(e.target.value)}
                 placeholder="e.g., 100"
-                className="w-full px-4 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-                style={{ color: "#000000", backgroundColor: "#ffffff" }}
+                className="w-full px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+                style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               />
             </div>
           </div>
@@ -394,8 +394,8 @@ export default function AssetConfigForm({
                 value={cutInSpeed}
                 onChange={(e) => setCutInSpeed(e.target.value)}
                 placeholder="3"
-                className="w-full px-3 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-                style={{ color: "#000000", backgroundColor: "#ffffff" }}
+                className="w-full px-3 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+                style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               />
             </div>
             <div>
@@ -408,8 +408,8 @@ export default function AssetConfigForm({
                 value={ratedSpeed}
                 onChange={(e) => setRatedSpeed(e.target.value)}
                 placeholder="12"
-                className="w-full px-3 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-                style={{ color: "#000000", backgroundColor: "#ffffff" }}
+                className="w-full px-3 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+                style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               />
             </div>
             <div>
@@ -422,8 +422,8 @@ export default function AssetConfigForm({
                 value={cutOutSpeed}
                 onChange={(e) => setCutOutSpeed(e.target.value)}
                 placeholder="25"
-                className="w-full px-3 py-3 !bg-white !text-black border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-                style={{ color: "#000000", backgroundColor: "#ffffff" }}
+                className="w-full px-3 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+                style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
               />
             </div>
           </div>
