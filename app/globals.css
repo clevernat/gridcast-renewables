@@ -51,16 +51,16 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
-/* Input text color - modern blue-gray for visibility matching website theme */
+/* Input text color - modern blue matching website gradient theme */
 input[type="text"],
 input[type="number"],
 input[type="email"],
 input[type="password"],
 textarea,
 select {
-  color: #1e293b !important; /* slate-800 - dark blue-gray, highly visible */
-  -webkit-text-fill-color: #1e293b !important; /* Override webkit autofill */
-  caret-color: #3b82f6 !important; /* blue-500 - matches website gradient theme */
+  color: #3b82f6 !important; /* blue-500 - matches website gradient, vibrant and modern */
+  -webkit-text-fill-color: #3b82f6 !important; /* Override webkit autofill */
+  caret-color: #3b82f6 !important; /* blue-500 - matches text color */
   background-color: white !important;
   font-weight: 500;
 }
@@ -71,21 +71,21 @@ input[type="email"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-  color: #0f172a !important; /* slate-900 - even darker when focused for better visibility */
-  -webkit-text-fill-color: #0f172a !important;
-  caret-color: #2563eb !important; /* blue-600 - darker blue cursor when focused */
+  color: #2563eb !important; /* blue-600 - slightly darker when focused */
+  -webkit-text-fill-color: #2563eb !important;
+  caret-color: #2563eb !important; /* blue-600 - matches focused text */
 }
 
-/* Placeholder text - lighter slate-gray with excellent contrast */
+/* Placeholder text - light gray with good contrast */
 input[type="text"]::placeholder,
 input[type="number"]::placeholder,
 input[type="email"]::placeholder,
 input[type="password"]::placeholder,
 textarea::placeholder {
-  color: #94a3b8 !important; /* slate-400 - visible but clearly different from input text */
+  color: #cbd5e1 !important; /* slate-300 - light gray, clearly different from blue text */
   opacity: 1 !important;
   font-weight: 400 !important;
-  -webkit-text-fill-color: #94a3b8 !important;
+  -webkit-text-fill-color: #cbd5e1 !important;
 }
 
 input[type="text"]:focus::placeholder,
