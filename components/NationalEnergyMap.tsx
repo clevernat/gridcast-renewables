@@ -32,7 +32,6 @@ export default function NationalEnergyMap({
   const [error, setError] = useState("");
   const [currentHour, setCurrentHour] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
-  const animationRef = useRef<boolean>(false);
   const userMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const userRadiusLayerId = "user-location-radius";
   const [userLocationValue, setUserLocationValue] = useState<number | null>(
@@ -329,39 +328,24 @@ export default function NationalEnergyMap({
   // Animation controls - now instant with cached data!
   const startAnimation = () => {
     if (isAnimating || allHourlyData.length === 0) return;
-
     setIsAnimating(true);
-    animationRef.current = true;
-
-    // Start animation loop
-    animateNextFrame();
-  };
-
-  const animateNextFrame = () => {
-    if (!animationRef.current) return;
-
-    setTimeout(() => {
-      if (!animationRef.current) return;
-
-      const nextHour = (currentHour + 1) % 24;
-      setCurrentHour(nextHour);
-
-      // Continue animation
-      animateNextFrame();
-    }, 800); // 800ms per frame for smooth animation
   };
 
   const stopAnimation = () => {
     setIsAnimating(false);
-    animationRef.current = false;
   };
 
-  // Cleanup animation on unmount
+  // Animation loop using useEffect
   useEffect(() => {
-    return () => {
-      animationRef.current = false;
-    };
-  }, []);
+    if (!isAnimating || allHourlyData.length === 0) return;
+
+    const timer = setTimeout(() => {
+      const nextHour = (currentHour + 1) % 24;
+      setCurrentHour(nextHour);
+    }, 800); // 800ms per frame for smooth animation
+
+    return () => clearTimeout(timer);
+  }, [isAnimating, currentHour, allHourlyData.length]);
 
   // Handle user location marker and radius
   useEffect(() => {
