@@ -1,7 +1,16 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getUserPreferences, saveUserPreferences } from "@/lib/utils/storageUtils";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import {
+  getUserPreferences,
+  updateUserPreferences,
+} from "@/lib/utils/storageUtils";
 
 type Theme = "light" | "dark";
 
@@ -22,7 +31,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const prefs = getUserPreferences();
     const savedTheme = prefs.theme || "light";
     setTheme(savedTheme);
-    
+
     // Apply theme to document
     if (savedTheme === "dark") {
       document.documentElement.classList.add("dark");
@@ -34,17 +43,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    
+
     // Update document class
     if (newTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-    
+
     // Save to preferences
-    const prefs = getUserPreferences();
-    saveUserPreferences({ ...prefs, theme: newTheme });
+    updateUserPreferences({ theme: newTheme });
   };
 
   // Prevent flash of unstyled content
@@ -66,4 +74,3 @@ export function useTheme() {
   }
   return context;
 }
-
