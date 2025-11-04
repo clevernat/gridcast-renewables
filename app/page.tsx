@@ -125,6 +125,13 @@ export default function Home() {
                 <span>📍</span>
                 <span className="hidden sm:inline">History</span>
               </button>
+              <Link
+                href="/batch-analysis"
+                className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 shadow-md hover:shadow-lg"
+              >
+                <span>📊</span>
+                <span className="hidden sm:inline">Batch Analysis</span>
+              </Link>
               <ExportMenu
                 forecast={forecast}
                 longTerm={longTermData}
@@ -166,15 +173,6 @@ export default function Home() {
             {showHistory && (
               <LocationHistory onSelectLocation={handleSelectLocation} />
             )}
-
-            {/* Batch Analysis Button */}
-            <Link
-              href="/batch-analysis"
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-            >
-              <span>📊</span>
-              <span>Multi-Location Batch Analysis</span>
-            </Link>
           </div>
 
           {/* Right Column - Results */}
