@@ -25,6 +25,9 @@ export default function NationalEnergyMap({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapData, setMapData] = useState<NationalEnergyMapType | null>(null);
+  const [allHourlyData, setAllHourlyData] = useState<NationalEnergyMapType[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [currentHour, setCurrentHour] = useState(0);
@@ -36,6 +39,9 @@ export default function NationalEnergyMap({
     null
   );
   const [nationalAverage, setNationalAverage] = useState<number | null>(null);
+  const [userLocationHourlyData, setUserLocationHourlyData] = useState<
+    number[]
+  >([]);
 
   // Initialize map
   useEffect(() => {
@@ -89,29 +95,31 @@ export default function NationalEnergyMap({
     };
   }, []);
 
-  // Fetch map data
-  const fetchMapData = async (hour: number = 0) => {
+  // Fetch ALL 24 hours of map data at once (called only once per type change)
+  const fetchAllMapData = async () => {
     setLoading(true);
     setError("");
 
     try {
-      const response = await fetch(
-        `/api/national-map?type=${type}&hour=${hour}`
-      );
+      const response = await fetch(`/api/national-map?type=${type}`);
       const data = await response.json();
 
-      if (data.success && data.data) {
-        setMapData(data.data);
+      if (data.success && data.data && data.data.hourlyData) {
+        setAllHourlyData(data.data.hourlyData);
 
-        // Calculate national average
-        const values = data.data.gridPoints.map((p: any) => p.value);
+        // Set initial hour data
+        const initialData = data.data.hourlyData[0];
+        setMapData(initialData);
+
+        // Calculate national average for hour 0
+        const values = initialData.gridPoints.map((p: any) => p.value);
         const avg =
           values.reduce((a: number, b: number) => a + b, 0) / values.length;
         setNationalAverage(avg);
 
-        // Fetch user location value if available
+        // Fetch user location data for all 24 hours if available
         if (userLocation) {
-          fetchUserLocationValue(userLocation, hour);
+          fetchUserLocationAllHours(userLocation);
         }
       } else {
         setError(data.error?.message || "Failed to load map data");
@@ -121,26 +129,32 @@ export default function NationalEnergyMap({
       console.error(err);
     } finally {
       setLoading(false);
-
-      // If animating, continue to next hour after data loads
-      if (animationRef.current) {
-        const nextHour = (hour + 1) % 24;
-        setCurrentHour(nextHour);
-        // Wait 500ms before fetching next hour to give user time to see the change
-        setTimeout(() => {
-          if (animationRef.current) {
-            fetchMapData(nextHour);
-          }
-        }, 500);
-      }
     }
   };
 
-  // Fetch energy value at user's specific location
-  const fetchUserLocationValue = async (
-    location: Location,
-    hour: number = 0
-  ) => {
+  // Update displayed hour from cached data (instant!)
+  const updateDisplayedHour = (hour: number) => {
+    if (allHourlyData.length === 0) return;
+
+    const hourData = allHourlyData[hour];
+    if (!hourData) return;
+
+    setMapData(hourData);
+
+    // Calculate national average for this hour
+    const values = hourData.gridPoints.map((p: any) => p.value);
+    const avg =
+      values.reduce((a: number, b: number) => a + b, 0) / values.length;
+    setNationalAverage(avg);
+
+    // Update user location value for this hour
+    if (userLocationHourlyData.length > hour) {
+      setUserLocationValue(userLocationHourlyData[hour]);
+    }
+  };
+
+  // Fetch energy values at user's specific location for ALL 24 hours
+  const fetchUserLocationAllHours = async (location: Location) => {
     try {
       const params = new URLSearchParams({
         latitude: location.latitude.toString(),
@@ -163,8 +177,9 @@ export default function NationalEnergyMap({
             ? data.hourly.shortwave_radiation
             : data.hourly.wind_speed_10m;
 
-        if (values && values[hour] !== undefined) {
-          setUserLocationValue(values[hour]);
+        if (values && values.length >= 24) {
+          setUserLocationHourlyData(values.slice(0, 24));
+          setUserLocationValue(values[0]); // Set initial hour
         }
       }
     } catch (err) {
@@ -173,10 +188,18 @@ export default function NationalEnergyMap({
     }
   };
 
-  // Load initial data
+  // Load initial data when type changes
   useEffect(() => {
-    fetchMapData(currentHour);
+    setCurrentHour(0); // Reset to hour 0
+    fetchAllMapData();
   }, [type]);
+
+  // Update displayed hour when currentHour changes
+  useEffect(() => {
+    if (allHourlyData.length > 0) {
+      updateDisplayedHour(currentHour);
+    }
+  }, [currentHour]);
 
   // Update map visualization
   useEffect(() => {
@@ -300,20 +323,32 @@ export default function NationalEnergyMap({
 
   const handleHourChange = (hour: number) => {
     setCurrentHour(hour);
-    fetchMapData(hour);
+    // Data updates automatically via useEffect
   };
 
-  // Animation controls
+  // Animation controls - now instant with cached data!
   const startAnimation = () => {
-    if (isAnimating) return;
+    if (isAnimating || allHourlyData.length === 0) return;
 
     setIsAnimating(true);
     animationRef.current = true;
 
-    // Start fetching the next hour
-    const nextHour = (currentHour + 1) % 24;
-    setCurrentHour(nextHour);
-    fetchMapData(nextHour);
+    // Start animation loop
+    animateNextFrame();
+  };
+
+  const animateNextFrame = () => {
+    if (!animationRef.current) return;
+
+    setTimeout(() => {
+      if (!animationRef.current) return;
+
+      const nextHour = (currentHour + 1) % 24;
+      setCurrentHour(nextHour);
+
+      // Continue animation
+      animateNextFrame();
+    }, 800); // 800ms per frame for smooth animation
   };
 
   const stopAnimation = () => {

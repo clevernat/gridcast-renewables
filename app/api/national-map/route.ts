@@ -3,18 +3,18 @@ import { fetchOpenMeteoForecast } from "@/lib/api/weatherClient";
 import { NationalEnergyMap, GridPoint, NationalMapAPIResponse } from "@/types";
 
 /**
- * GET /api/national-map?type=solar|wind&hour=0-23
+ * GET /api/national-map?type=solar|wind
  *
  * Generate a national energy potential map for the United States
+ * Returns data for ALL 24 hours at once for better performance
  *
  * Query parameters:
  * - type: 'solar' | 'wind' (required)
- * - hour: 0-23 (optional, default 0 - current hour)
  *
  * Response:
  * {
  *   success: boolean,
- *   data?: NationalEnergyMap,
+ *   data?: { hourlyData: NationalEnergyMap[], bounds: any },
  *   error?: { error: string, message: string }
  * }
  */
@@ -22,7 +22,6 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const type = searchParams.get("type") as "solar" | "wind";
-    const hour = parseInt(searchParams.get("hour") || "0");
 
     // Validate input
     if (!type || (type !== "solar" && type !== "wind")) {
@@ -32,19 +31,6 @@ export async function GET(request: NextRequest) {
           error: {
             error: "INVALID_INPUT",
             message: 'Type parameter must be either "solar" or "wind"',
-          },
-        } as NationalMapAPIResponse,
-        { status: 400 }
-      );
-    }
-
-    if (hour < 0 || hour > 23) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: {
-            error: "INVALID_INPUT",
-            message: "Hour parameter must be between 0 and 23",
           },
         } as NationalMapAPIResponse,
         { status: 400 }
@@ -73,11 +59,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch weather data for each grid point with rate limiting
+    // Fetch weather data for each grid point (24 hours at once)
     // Process in batches to avoid hitting API rate limits
-    const batchSize = 5; // Process 5 requests at a time
-    const delayBetweenBatches = 1000; // 1 second delay between batches
-    const validPoints: GridPoint[] = [];
+    const batchSize = 10; // Process 10 requests at a time (faster)
+    const delayBetweenBatches = 500; // 500ms delay between batches
+
+    // Store data for all 24 hours
+    const hourlyGridPoints: GridPoint[][] = Array.from(
+      { length: 24 },
+      () => []
+    );
 
     for (let i = 0; i < samplePoints.length; i += batchSize) {
       const batch = samplePoints.slice(i, i + batchSize);
@@ -89,23 +80,24 @@ export async function GET(request: NextRequest) {
             24
           );
 
-          if (weatherData && weatherData.length > hour) {
-            const hourData = weatherData[hour];
-            let value = 0;
+          if (weatherData && weatherData.length >= 24) {
+            // Extract values for all 24 hours
+            return weatherData.map((hourData, hour) => {
+              let value = 0;
 
-            if (type === "solar") {
-              // Use solar irradiance as the potential value
-              value = hourData.solarIrradiance || 0;
-            } else if (type === "wind") {
-              // Use wind speed as the potential value
-              value = hourData.windSpeed || 0;
-            }
+              if (type === "solar") {
+                value = hourData.solarIrradiance || 0;
+              } else if (type === "wind") {
+                value = hourData.windSpeed || 0;
+              }
 
-            return {
-              latitude: point.lat,
-              longitude: point.lon,
-              value,
-            };
+              return {
+                latitude: point.lat,
+                longitude: point.lon,
+                value,
+                hour,
+              };
+            });
           }
 
           return null;
@@ -119,10 +111,19 @@ export async function GET(request: NextRequest) {
       });
 
       const batchResults = await Promise.all(batchPromises);
-      const validBatchPoints = batchResults.filter(
-        (p): p is GridPoint => p !== null
-      );
-      validPoints.push(...validBatchPoints);
+
+      // Organize data by hour
+      batchResults.forEach((pointData) => {
+        if (pointData) {
+          pointData.forEach((data: any) => {
+            hourlyGridPoints[data.hour].push({
+              latitude: data.latitude,
+              longitude: data.longitude,
+              value: data.value,
+            });
+          });
+        }
+      });
 
       // Add delay between batches (except for the last batch)
       if (i + batchSize < samplePoints.length) {
@@ -132,7 +133,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (validPoints.length === 0) {
+    // Check if we have data
+    if (hourlyGridPoints[0].length === 0) {
       return NextResponse.json(
         {
           success: false,
@@ -145,22 +147,28 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get timestamp for the requested hour
-    const now = new Date();
-    now.setHours(now.getHours() + hour);
-    const timestamp = now.toISOString();
+    // Create NationalEnergyMap objects for each hour
+    const hourlyData: NationalEnergyMap[] = hourlyGridPoints.map(
+      (gridPoints, hour) => {
+        const now = new Date();
+        now.setHours(now.getHours() + hour);
 
-    const nationalMap: NationalEnergyMap = {
-      type,
-      timestamp,
-      gridPoints: validPoints,
-      bounds,
-    };
+        return {
+          type,
+          timestamp: now.toISOString(),
+          gridPoints,
+          bounds,
+        };
+      }
+    );
 
     return NextResponse.json({
       success: true,
-      data: nationalMap,
-    } as NationalMapAPIResponse);
+      data: {
+        hourlyData,
+        bounds,
+      },
+    } as any);
   } catch (error: any) {
     console.error("Error generating national map:", error);
 
