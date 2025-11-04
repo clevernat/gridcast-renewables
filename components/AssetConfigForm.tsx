@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AssetType, Asset, Location, SolarAsset, WindAsset } from "@/types";
-import { useGooglePlacesAutocomplete } from "@/hooks/useGooglePlacesAutocomplete";
+import { useOpenStreetMapAutocomplete } from "@/hooks/useOpenStreetMapAutocomplete";
 
 interface AssetConfigFormProps {
   onSubmit: (location: Location, asset: Asset) => void;
@@ -19,8 +19,17 @@ export default function AssetConfigForm({
   const [longitude, setLongitude] = useState("");
   const [useCoordinates, setUseCoordinates] = useState(false);
 
-  // Google Places Autocomplete
-  const { inputRef, isLoaded } = useGooglePlacesAutocomplete((place) => {
+  // Free OpenStreetMap Autocomplete (no API key required)
+  const {
+    query,
+    suggestions,
+    isLoading: autocompleteLoading,
+    showSuggestions,
+    handleInputChange,
+    handleSelectSuggestion,
+    handleBlur,
+    handleFocus,
+  } = useOpenStreetMapAutocomplete((place) => {
     setAddress(place.address);
     setLatitude(place.latitude.toString());
     setLongitude(place.longitude.toString());
@@ -191,23 +200,73 @@ export default function AssetConfigForm({
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
               Address
-              {isLoaded && (
-                <span className="ml-2 text-xs text-green-600 font-normal">
-                  ✓ Autocomplete enabled
-                </span>
-              )}
+              <span className="ml-2 text-xs text-green-600 font-normal">
+                ✓ Free autocomplete (no API key needed)
+              </span>
             </label>
-            <div className="flex gap-2">
-              <input
-                ref={inputRef}
-                type="text"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="Start typing an address..."
-                className="flex-1 px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
-                style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
-                autoComplete="off"
-              />
+            <div className="flex gap-2 relative">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={query || address}
+                  onChange={(e) => {
+                    handleInputChange(e.target.value);
+                    setAddress(e.target.value);
+                  }}
+                  onFocus={handleFocus}
+                  onBlur={handleBlur}
+                  placeholder="Start typing an address..."
+                  className="w-full px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
+                  style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
+                  autoComplete="off"
+                />
+
+                {/* Autocomplete Dropdown */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border-2 border-gray-200 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                    {suggestions.map((suggestion) => (
+                      <button
+                        key={suggestion.place_id}
+                        type="button"
+                        onClick={() => handleSelectSuggestion(suggestion)}
+                        className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors text-sm border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="flex items-start gap-2">
+                          <span className="text-blue-500 mt-0.5">📍</span>
+                          <span className="text-gray-700 flex-1">
+                            {suggestion.display_name}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Loading Indicator */}
+                {autocompleteLoading && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-blue-500"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
               <button
                 type="button"
                 onClick={handleGeocodeAddress}
