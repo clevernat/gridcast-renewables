@@ -223,6 +223,23 @@ export default function BatchAnalysis({
     setIsProcessing(false);
   };
 
+  const downloadTemplate = () => {
+    const templateCSV = `name,latitude,longitude,type,capacity
+Phoenix Solar,33.4484,-112.0740,solar,10
+Texas Wind,32.4707,-100.4065,wind,2.5
+California Solar,37.7749,-122.4194,solar,7
+Denver Solar,39.7392,-104.9903,solar,12
+Seattle Solar,47.6062,-122.3321,solar,8`;
+
+    const blob = new Blob([templateCSV], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `batch_analysis_template.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const downloadResults = () => {
     const csv = [
       "Rank,Name,Latitude,Longitude,Total Energy,Avg Capacity %,Score,Status",
@@ -306,15 +323,27 @@ export default function BatchAnalysis({
 
         {/* Sample CSV Template */}
         <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-          <h4 className="font-semibold text-gray-900 mb-2">
-            📋 Sample CSV Format:
-          </h4>
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold text-gray-900">
+              📋 Sample CSV Format:
+            </h4>
+            <button
+              onClick={downloadTemplate}
+              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
+            >
+              📥 Download Template
+            </button>
+          </div>
           <pre className="text-xs bg-white p-3 rounded border border-gray-300 overflow-x-auto">
             {`name,latitude,longitude,type,capacity
 Phoenix Solar,33.4484,-112.0740,solar,10
 Texas Wind,32.4707,-100.4065,wind,2.5
 California Solar,37.7749,-122.4194,solar,7`}
           </pre>
+          <p className="text-xs text-gray-600 mt-2">
+            ⚠️ <strong>Note:</strong> This is NOT the same as exported forecast
+            CSV files. Use the template above or download it.
+          </p>
         </div>
 
         {/* Process Button */}
