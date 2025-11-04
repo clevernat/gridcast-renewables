@@ -600,6 +600,7 @@ export default function NationalEnergyMap({
         <div className="flex space-x-2">
           <button
             onClick={() => onTypeChange("solar")}
+            aria-label="Solar view"
             className={`px-4 py-2 rounded-md font-medium transition-colors ${
               type === "solar"
                 ? "bg-yellow-500 text-white"
@@ -610,6 +611,7 @@ export default function NationalEnergyMap({
           </button>
           <button
             onClick={() => onTypeChange("wind")}
+            aria-label="Wind view"
             className={`px-4 py-2 rounded-md font-medium transition-colors ${
               type === "wind"
                 ? "bg-blue-500 text-white"

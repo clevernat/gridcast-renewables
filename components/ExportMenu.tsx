@@ -41,6 +41,7 @@ export default function ExportMenu({
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [progressMessage, setProgressMessage] = useState("");
 
   const handleCopyToClipboard = async () => {
     let text = "";
@@ -100,8 +101,14 @@ Atlanta Solar,33.7490,-84.3880,solar,15`;
 
   const handleExportAllImages = async () => {
     setDownloading(true);
+    setProgressMessage("Starting export...");
     try {
-      await exportAllImagesAsZip(forecast, longTerm, activeTab);
+      await exportAllImagesAsZip(
+        forecast,
+        longTerm,
+        activeTab,
+        setProgressMessage
+      );
       setIsOpen(false);
     } catch (err) {
       console.error("Failed to export images:", err);
@@ -112,13 +119,15 @@ Atlanta Solar,33.7490,-84.3880,solar,15`;
       );
     } finally {
       setDownloading(false);
+      setProgressMessage("");
     }
   };
 
   const handleExportMapAnimation = async () => {
     setDownloading(true);
+    setProgressMessage("Starting animation export...");
     try {
-      await exportMapAnimationAsZip();
+      await exportMapAnimationAsZip(setProgressMessage);
       setIsOpen(false);
     } catch (err) {
       console.error("Failed to export map animation:", err);
@@ -129,6 +138,7 @@ Atlanta Solar,33.7490,-84.3880,solar,15`;
       );
     } finally {
       setDownloading(false);
+      setProgressMessage("");
     }
   };
 
@@ -382,12 +392,14 @@ Atlanta Solar,33.7490,-84.3880,solar,15`;
                 className="w-full text-left px-3 py-2 rounded-lg hover:bg-purple-50 transition-colors flex items-center gap-3 text-sm disabled:opacity-50"
               >
                 <span className="text-lg">🗜️</span>
-                <div>
+                <div className="flex-1">
                   <div className="font-semibold text-gray-900">
                     {downloading ? "Exporting..." : "Export All Images (ZIP)"}
                   </div>
                   <div className="text-xs text-gray-500">
-                    All charts, maps & analytics
+                    {downloading && progressMessage
+                      ? progressMessage
+                      : "Solar + Wind maps, charts, animations & GIFs"}
                   </div>
                 </div>
               </button>
@@ -400,14 +412,16 @@ Atlanta Solar,33.7490,-84.3880,solar,15`;
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 transition-colors flex items-center gap-3 text-sm disabled:opacity-50"
                 >
                   <span className="text-lg">🎬</span>
-                  <div>
+                  <div className="flex-1">
                     <div className="font-semibold text-gray-900">
                       {downloading
-                        ? "Capturing Frames..."
+                        ? "Capturing..."
                         : "Export Map Animation (ZIP)"}
                     </div>
                     <div className="text-xs text-gray-500">
-                      24 hourly frames
+                      {downloading && progressMessage
+                        ? progressMessage
+                        : "24 frames + animated GIF"}
                     </div>
                   </div>
                 </button>
