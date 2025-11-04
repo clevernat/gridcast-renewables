@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { PowerForecast, LongTermAnalysis } from "@/types";
+import {
+  PowerForecast,
+  LongTermAnalysis,
+  AtmosphericResearchData,
+} from "@/types";
 import {
   exportForecastToCSV,
   exportForecastToJSON,
@@ -12,6 +16,11 @@ import {
   generateLongTermSummaryText,
   downloadMapScreenshot,
 } from "@/lib/utils/exportUtils";
+import {
+  generateAtmosphericResearchPDF,
+  generateQuickSummaryPDF,
+} from "@/lib/utils/pdfExport";
+import { generateAtmosphericResearchData } from "@/lib/utils/atmosphericResearch";
 
 interface ExportMenuProps {
   forecast?: PowerForecast | null;
@@ -30,13 +39,13 @@ export default function ExportMenu({
 
   const handleCopyToClipboard = async () => {
     let text = "";
-    
+
     if (activeTab === "forecast" && forecast) {
       text = generateSummaryText(forecast);
     } else if (activeTab === "longterm" && longTerm) {
       text = generateLongTermSummaryText(longTerm);
     }
-    
+
     if (text) {
       const success = await copyToClipboard(text);
       if (success) {
@@ -49,7 +58,8 @@ export default function ExportMenu({
   const handleDownloadScreenshot = async () => {
     setDownloading(true);
     try {
-      const elementId = activeTab === "map" ? "national-energy-map" : "chart-container";
+      const elementId =
+        activeTab === "map" ? "national-energy-map" : "chart-container";
       const filename = `gridcast_${activeTab}_${Date.now()}.png`;
       await downloadMapScreenshot(elementId, filename);
     } catch (err) {
@@ -60,8 +70,38 @@ export default function ExportMenu({
     }
   };
 
-  const hasData = (activeTab === "forecast" && forecast) || 
-                  (activeTab === "longterm" && longTerm);
+  const handleGeneratePDF = async () => {
+    if (!forecast) return;
+
+    setDownloading(true);
+    try {
+      if (longTerm) {
+        // Generate comprehensive research PDF
+        const researchData =
+          forecast.meteorologicalData.length > 0
+            ? generateAtmosphericResearchData(
+                forecast.location,
+                forecast.meteorologicalData
+              )
+            : null;
+
+        await generateAtmosphericResearchPDF(forecast, longTerm, researchData);
+      } else {
+        // Generate quick summary PDF
+        await generateQuickSummaryPDF(forecast);
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
+    } finally {
+      setDownloading(false);
+      setIsOpen(false);
+    }
+  };
+
+  const hasData =
+    (activeTab === "forecast" && forecast) ||
+    (activeTab === "longterm" && longTerm);
 
   if (!hasData && activeTab !== "map") {
     return null;
@@ -92,6 +132,25 @@ export default function ExportMenu({
             </div>
 
             <div className="p-2 space-y-1">
+              {/* PDF Export */}
+              {forecast && (
+                <button
+                  onClick={handleGeneratePDF}
+                  disabled={downloading}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-3 text-sm disabled:opacity-50"
+                >
+                  <span className="text-lg">📄</span>
+                  <div>
+                    <div className="font-semibold text-gray-900">
+                      {downloading ? "Generating..." : "Generate PDF Report"}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Comprehensive research report
+                    </div>
+                  </div>
+                </button>
+              )}
+
               {/* CSV Export */}
               {activeTab === "forecast" && forecast && (
                 <button
@@ -103,8 +162,12 @@ export default function ExportMenu({
                 >
                   <span className="text-lg">📊</span>
                   <div>
-                    <div className="font-semibold text-gray-900">Export to CSV</div>
-                    <div className="text-xs text-gray-500">Forecast data table</div>
+                    <div className="font-semibold text-gray-900">
+                      Export to CSV
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Forecast data table
+                    </div>
                   </div>
                 </button>
               )}
@@ -119,8 +182,12 @@ export default function ExportMenu({
                 >
                   <span className="text-lg">📊</span>
                   <div>
-                    <div className="font-semibold text-gray-900">Export to CSV</div>
-                    <div className="text-xs text-gray-500">Monthly averages</div>
+                    <div className="font-semibold text-gray-900">
+                      Export to CSV
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Monthly averages
+                    </div>
                   </div>
                 </button>
               )}
@@ -136,7 +203,9 @@ export default function ExportMenu({
                 >
                   <span className="text-lg">📄</span>
                   <div>
-                    <div className="font-semibold text-gray-900">Export to JSON</div>
+                    <div className="font-semibold text-gray-900">
+                      Export to JSON
+                    </div>
                     <div className="text-xs text-gray-500">Raw data format</div>
                   </div>
                 </button>
@@ -152,7 +221,9 @@ export default function ExportMenu({
                 >
                   <span className="text-lg">📄</span>
                   <div>
-                    <div className="font-semibold text-gray-900">Export to JSON</div>
+                    <div className="font-semibold text-gray-900">
+                      Export to JSON
+                    </div>
                     <div className="text-xs text-gray-500">Raw data format</div>
                   </div>
                 </button>
@@ -201,7 +272,9 @@ export default function ExportMenu({
                 <span className="text-lg">🖨️</span>
                 <div>
                   <div className="font-semibold text-gray-900">Print</div>
-                  <div className="text-xs text-gray-500">Print current view</div>
+                  <div className="text-xs text-gray-500">
+                    Print current view
+                  </div>
                 </div>
               </button>
             </div>
@@ -217,4 +290,3 @@ export default function ExportMenu({
     </div>
   );
 }
-

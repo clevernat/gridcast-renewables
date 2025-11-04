@@ -33,26 +33,69 @@ export async function fetchOpenMeteoForecast(
       latitude: location.latitude.toString(),
       longitude: location.longitude.toString(),
       hourly: [
+        // Temperature & Thermodynamics
         "temperature_2m",
+        "apparent_temperature",
+        "dew_point_2m",
+
+        // Solar Radiation
+        "shortwave_radiation",
+        "direct_radiation",
+        "diffuse_radiation",
+        "direct_normal_irradiance",
+        "terrestrial_radiation",
+
+        // Atmospheric Pressure
+        "surface_pressure",
+        "pressure_msl",
+
+        // Humidity & Moisture
+        "relative_humidity_2m",
+        "vapour_pressure_deficit",
+
+        // Precipitation
+        "precipitation",
+        "rain",
+        "snowfall",
+        "precipitation_probability",
+
+        // Cloud Cover
         "cloud_cover",
+        "cloud_cover_low",
+        "cloud_cover_mid",
+        "cloud_cover_high",
+
+        // Wind (Multi-level)
         "wind_speed_10m",
         "wind_speed_80m",
         "wind_speed_100m",
         "wind_speed_120m",
         "wind_direction_10m",
-        "shortwave_radiation",
-        "direct_radiation",
-        "diffuse_radiation",
+        "wind_gusts_10m",
+
+        // Atmospheric Stability
+        "cape",
+        "lifted_index",
+
+        // Air Quality & Visibility
+        "uv_index",
+        "visibility",
+
+        // Soil & Surface
+        "soil_temperature_0cm",
+        "soil_moisture_0_to_1cm",
+        "snow_depth",
       ].join(","),
       temperature_unit: "celsius",
       wind_speed_unit: "ms",
+      precipitation_unit: "mm",
       timezone: "auto",
       forecast_days: Math.ceil(hours / 24).toString(),
     });
 
     const response = await axios.get(
       `https://api.open-meteo.com/v1/forecast?${params.toString()}`,
-      { timeout: 10000 }
+      { timeout: 15000 }
     );
 
     const data = response.data;
@@ -60,13 +103,79 @@ export async function fetchOpenMeteoForecast(
 
     // Parse the response and limit to requested hours
     for (let i = 0; i < Math.min(hours, data.hourly.time.length); i++) {
+      const missingFlags: string[] = [];
+
+      // Check for missing critical data
+      if (!data.hourly.temperature_2m?.[i]) missingFlags.push("temperature");
+      if (!data.hourly.surface_pressure?.[i]) missingFlags.push("pressure");
+      if (!data.hourly.relative_humidity_2m?.[i]) missingFlags.push("humidity");
+
+      // Determine data quality based on completeness
+      let quality: "excellent" | "good" | "fair" | "poor" = "excellent";
+      if (missingFlags.length > 0) quality = "good";
+      if (missingFlags.length > 2) quality = "fair";
+      if (missingFlags.length > 5) quality = "poor";
+
       hourlyData.push({
         time: data.hourly.time[i],
+
+        // Temperature & Thermodynamics
         temperature: data.hourly.temperature_2m?.[i],
-        solarIrradiance: data.hourly.shortwave_radiation?.[i], // W/m²
+        apparentTemperature: data.hourly.apparent_temperature?.[i],
+        dewPoint: data.hourly.dew_point_2m?.[i],
+
+        // Solar Radiation
+        solarIrradiance: data.hourly.shortwave_radiation?.[i],
+        directRadiation: data.hourly.direct_radiation?.[i],
+        diffuseRadiation: data.hourly.diffuse_radiation?.[i],
+        directNormalIrradiance: data.hourly.direct_normal_irradiance?.[i],
+        terrestrialRadiation: data.hourly.terrestrial_radiation?.[i],
+
+        // Atmospheric Pressure
+        surfacePressure: data.hourly.surface_pressure?.[i],
+        seaLevelPressure: data.hourly.pressure_msl?.[i],
+
+        // Humidity & Moisture
+        relativeHumidity: data.hourly.relative_humidity_2m?.[i],
+        vaporPressureDeficit: data.hourly.vapour_pressure_deficit?.[i],
+
+        // Precipitation
+        precipitation: data.hourly.precipitation?.[i],
+        rain: data.hourly.rain?.[i],
+        snowfall: data.hourly.snowfall?.[i],
+        precipitationProbability: data.hourly.precipitation_probability?.[i],
+
+        // Cloud Cover
         cloudCover: data.hourly.cloud_cover?.[i],
-        windSpeed: data.hourly.wind_speed_10m?.[i], // m/s at 10m
+        cloudCoverLow: data.hourly.cloud_cover_low?.[i],
+        cloudCoverMid: data.hourly.cloud_cover_mid?.[i],
+        cloudCoverHigh: data.hourly.cloud_cover_high?.[i],
+
+        // Wind (Multi-level)
+        windSpeed: data.hourly.wind_speed_10m?.[i],
+        windSpeed10m: data.hourly.wind_speed_10m?.[i],
+        windSpeed80m: data.hourly.wind_speed_80m?.[i],
+        windSpeed100m: data.hourly.wind_speed_100m?.[i],
+        windSpeed120m: data.hourly.wind_speed_120m?.[i],
         windDirection: data.hourly.wind_direction_10m?.[i],
+        windGusts: data.hourly.wind_gusts_10m?.[i],
+
+        // Atmospheric Stability
+        cape: data.hourly.cape?.[i],
+        surfaceLiftedIndex: data.hourly.lifted_index?.[i],
+
+        // Air Quality & Visibility
+        uvIndex: data.hourly.uv_index?.[i],
+        visibility: data.hourly.visibility?.[i],
+
+        // Soil & Surface
+        soilTemperature: data.hourly.soil_temperature_0cm?.[i],
+        soilMoisture: data.hourly.soil_moisture_0_to_1cm?.[i],
+        snowDepth: data.hourly.snow_depth?.[i],
+
+        // Data Quality
+        dataQuality: quality,
+        missingDataFlags: missingFlags.length > 0 ? missingFlags : undefined,
       });
     }
 

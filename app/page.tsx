@@ -8,6 +8,8 @@ import NationalEnergyMap from "@/components/NationalEnergyMap";
 import ExportMenu from "@/components/ExportMenu";
 import LocationHistory from "@/components/LocationHistory";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
+import AtmosphericResearchDashboard from "@/components/AtmosphericResearchDashboard";
+import BatchAnalysis from "@/components/BatchAnalysis";
 import {
   Asset,
   Location,
@@ -21,7 +23,7 @@ import {
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<
-    "forecast" | "longterm" | "map" | "analytics"
+    "forecast" | "longterm" | "map" | "analytics" | "research"
   >("forecast");
   const [loading, setLoading] = useState(false);
   const [forecast, setForecast] = useState<PowerForecast | null>(null);
@@ -32,6 +34,7 @@ export default function Home() {
   const [mapType, setMapType] = useState<"solar" | "wind">("solar");
   const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const [showBatchAnalysis, setShowBatchAnalysis] = useState(false);
 
   // Load user preferences on mount
   useEffect(() => {
@@ -164,6 +167,15 @@ export default function Home() {
             {showHistory && (
               <LocationHistory onSelectLocation={handleSelectLocation} />
             )}
+
+            {/* Batch Analysis Button */}
+            <button
+              onClick={() => setShowBatchAnalysis(true)}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            >
+              <span>📊</span>
+              <span>Multi-Location Batch Analysis</span>
+            </button>
           </div>
 
           {/* Right Column - Results */}
@@ -200,6 +212,16 @@ export default function Home() {
                   }`}
                 >
                   <span className="hidden sm:inline">📊 </span>Analytics
+                </button>
+                <button
+                  onClick={() => setActiveTab("research")}
+                  className={`py-3 px-2 sm:px-4 rounded-xl font-semibold transition-all duration-300 text-xs sm:text-sm ${
+                    activeTab === "research"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-500 text-white shadow-lg shadow-indigo-500/50 scale-105"
+                      : "bg-transparent text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="hidden sm:inline">🔬 </span>Research
                 </button>
                 <button
                   onClick={() => setActiveTab("map")}
@@ -287,12 +309,14 @@ export default function Home() {
                         ROI calculations, carbon offset, and peak production
                         analysis
                       </p>
-                      <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
-                        <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
-                        <span>Financial & Environmental Insights</span>
-                      </div>
                     </div>
                   )}
+                </div>
+              )}
+
+              {activeTab === "research" && (
+                <div className="animate-fadeIn">
+                  <AtmosphericResearchDashboard forecast={forecast} />
                 </div>
               )}
 
@@ -385,6 +409,11 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Batch Analysis Modal */}
+      {showBatchAnalysis && (
+        <BatchAnalysis onClose={() => setShowBatchAnalysis(false)} />
+      )}
     </div>
   );
 }
