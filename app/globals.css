@@ -51,17 +51,18 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
-/* Input text color - dark and visible */
+/* Input text color - modern blue-gray for visibility matching website theme */
 input[type="text"],
 input[type="number"],
 input[type="email"],
 input[type="password"],
 textarea,
 select {
-  color: #000000 !important; /* Pure black for typed text */
-  -webkit-text-fill-color: #000000 !important; /* Override webkit autofill */
-  caret-color: #000000 !important; /* Black cursor */
+  color: #1e293b !important; /* slate-800 - dark blue-gray, highly visible */
+  -webkit-text-fill-color: #1e293b !important; /* Override webkit autofill */
+  caret-color: #3b82f6 !important; /* blue-500 - matches website gradient theme */
   background-color: white !important;
+  font-weight: 500;
 }
 
 input[type="text"]:focus,
@@ -70,21 +71,21 @@ input[type="email"]:focus,
 input[type="password"]:focus,
 textarea:focus,
 select:focus {
-  color: #000000 !important; /* Keep black when focused */
-  -webkit-text-fill-color: #000000 !important;
-  caret-color: #2563eb !important; /* Blue cursor when focused */
+  color: #0f172a !important; /* slate-900 - even darker when focused for better visibility */
+  -webkit-text-fill-color: #0f172a !important;
+  caret-color: #2563eb !important; /* blue-600 - darker blue cursor when focused */
 }
 
-/* Placeholder text - gray and clearly different */
+/* Placeholder text - lighter slate-gray with excellent contrast */
 input[type="text"]::placeholder,
 input[type="number"]::placeholder,
 input[type="email"]::placeholder,
 input[type="password"]::placeholder,
 textarea::placeholder {
-  color: #9ca3af !important; /* Medium gray - clearly different from input text */
+  color: #94a3b8 !important; /* slate-400 - visible but clearly different from input text */
   opacity: 1 !important;
   font-weight: 400 !important;
-  -webkit-text-fill-color: #9ca3af !important;
+  -webkit-text-fill-color: #94a3b8 !important;
 }
 
 input[type="text"]:focus::placeholder,
