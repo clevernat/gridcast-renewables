@@ -39,49 +39,57 @@ export function calculateROI(
   projectLifetime: number = 20 // 20 years
 ): ROICalculation {
   const isSolar = analysis.asset.type === "solar";
-  
+
   // Calculate total investment
-  const systemSize = isSolar 
-    ? analysis.asset.dcCapacity 
+  const systemSize = isSolar
+    ? analysis.asset.dcCapacity
     : analysis.asset.ratedCapacity * 1000; // Convert MW to kW
-  
+
   const totalInvestment = systemSize * costPerKW;
-  
+
   // Annual production in kWh
   const annualProductionKWh = isSolar
     ? analysis.totalAnnualProduction // Already in kWh
     : analysis.totalAnnualProduction * 1000; // Convert MWh to kWh
-  
+
   // Annual revenue/savings
   const annualRevenue = annualProductionKWh * electricityRate;
   const annualSavings = annualRevenue - maintenanceCostPerYear;
-  
-  // Simple payback period
-  const paybackPeriod = totalInvestment / annualSavings;
-  
+
+  // Simple payback period (handle division by zero)
+  const paybackPeriod =
+    annualSavings > 0 ? totalInvestment / annualSavings : Infinity;
+
   // 20-year ROI
   const totalRevenue20Year = annualRevenue * projectLifetime;
   const totalMaintenance20Year = maintenanceCostPerYear * projectLifetime;
-  const netProfit20Year = totalRevenue20Year - totalMaintenance20Year - totalInvestment;
-  const roi20Year = (netProfit20Year / totalInvestment) * 100;
-  
+  const netProfit20Year =
+    totalRevenue20Year - totalMaintenance20Year - totalInvestment;
+  const roi20Year =
+    totalInvestment > 0 ? (netProfit20Year / totalInvestment) * 100 : 0;
+
   // Net Present Value (NPV)
   let npv = -totalInvestment;
   for (let year = 1; year <= projectLifetime; year++) {
     npv += annualSavings / Math.pow(1 + discountRate, year);
   }
-  
+
   // Internal Rate of Return (IRR) - simplified approximation
-  const irr = ((Math.pow(totalRevenue20Year / totalInvestment, 1 / projectLifetime) - 1) * 100);
-  
+  const irr =
+    totalInvestment > 0 && totalRevenue20Year > 0
+      ? (Math.pow(totalRevenue20Year / totalInvestment, 1 / projectLifetime) -
+          1) *
+        100
+      : 0;
+
   return {
-    totalInvestment,
-    annualRevenue,
-    annualSavings,
-    paybackPeriod,
-    roi20Year,
-    netPresentValue: npv,
-    internalRateOfReturn: irr,
+    totalInvestment: isFinite(totalInvestment) ? totalInvestment : 0,
+    annualRevenue: isFinite(annualRevenue) ? annualRevenue : 0,
+    annualSavings: isFinite(annualSavings) ? annualSavings : 0,
+    paybackPeriod: isFinite(paybackPeriod) ? paybackPeriod : 0,
+    roi20Year: isFinite(roi20Year) ? roi20Year : 0,
+    netPresentValue: isFinite(npv) ? npv : 0,
+    internalRateOfReturn: isFinite(irr) ? irr : 0,
   };
 }
 
@@ -93,33 +101,41 @@ export function calculateCarbonOffset(
   gridCarbonIntensity: number = 0.42 // kg CO2 per kWh (US average)
 ): CarbonOffsetCalculation {
   const isSolar = analysis.asset.type === "solar";
-  
+
   // Annual production in kWh
   const annualProductionKWh = isSolar
     ? analysis.totalAnnualProduction
     : analysis.totalAnnualProduction * 1000;
-  
+
   // Annual CO2 offset in kg
   const annualCO2Offset = annualProductionKWh * gridCarbonIntensity;
-  
+
   // Lifetime offset (20 years)
   const lifetimeCO2Offset = annualCO2Offset * 20;
-  
+
   // Equivalent trees (1 tree absorbs ~21 kg CO2/year)
-  const equivalentTrees = Math.round(annualCO2Offset / 21);
-  
+  const equivalentTrees = isFinite(annualCO2Offset)
+    ? Math.round(annualCO2Offset / 21)
+    : 0;
+
   // Equivalent car miles avoided (1 mile = ~0.404 kg CO2)
-  const equivalentCarsMilesAvoided = Math.round(annualCO2Offset / 0.404);
-  
+  const equivalentCarsMilesAvoided = isFinite(annualCO2Offset)
+    ? Math.round(annualCO2Offset / 0.404)
+    : 0;
+
   // Equivalent homes' electricity (average US home uses ~10,632 kWh/year)
-  const equivalentHomesElectricity = annualProductionKWh / 10632;
-  
+  const equivalentHomesElectricity = isFinite(annualProductionKWh)
+    ? annualProductionKWh / 10632
+    : 0;
+
   return {
-    annualCO2Offset,
-    lifetimeCO2Offset,
+    annualCO2Offset: isFinite(annualCO2Offset) ? annualCO2Offset : 0,
+    lifetimeCO2Offset: isFinite(lifetimeCO2Offset) ? lifetimeCO2Offset : 0,
     equivalentTrees,
     equivalentCarsMilesAvoided,
-    equivalentHomesElectricity,
+    equivalentHomesElectricity: isFinite(equivalentHomesElectricity)
+      ? equivalentHomesElectricity
+      : 0,
   };
 }
 
@@ -130,27 +146,32 @@ export function analyzePeakProduction(forecast: PowerForecast): PeakAnalysis {
   const powers = forecast.outputs.map((o) => o.power);
   const maxPower = Math.max(...powers);
   const avgPower = powers.reduce((sum, p) => sum + p, 0) / powers.length;
-  
+
   // Find peak hour
   const peakIndex = powers.indexOf(maxPower);
-  const peakHour = new Date(forecast.outputs[peakIndex].timestamp).toLocaleString();
-  
+  const peakHour = new Date(
+    forecast.outputs[peakIndex].timestamp
+  ).toLocaleString();
+
   // Calculate capacity
-  const capacity = forecast.asset.type === "solar"
-    ? forecast.asset.dcCapacity
-    : forecast.asset.ratedCapacity * 1000; // Convert MW to kW
-  
+  const capacity =
+    forecast.asset.type === "solar"
+      ? forecast.asset.dcCapacity
+      : forecast.asset.ratedCapacity * 1000; // Convert MW to kW
+
   // Count productive hours (>50% capacity)
   const productiveHours = powers.filter((p) => p > capacity * 0.5).length;
-  
+
   // Count low production hours (<20% capacity)
   const lowProductionHours = powers.filter((p) => p < capacity * 0.2).length;
-  
+
+  const peakToAverageRatio = avgPower > 0 ? maxPower / avgPower : 0;
+
   return {
     peakHour,
-    peakPower: maxPower,
-    averagePower: avgPower,
-    peakToAverageRatio: maxPower / avgPower,
+    peakPower: isFinite(maxPower) ? maxPower : 0,
+    averagePower: isFinite(avgPower) ? avgPower : 0,
+    peakToAverageRatio: isFinite(peakToAverageRatio) ? peakToAverageRatio : 0,
     productiveHours,
     lowProductionHours,
   };
@@ -166,30 +187,32 @@ export interface SeasonalTrend {
   months: string[];
 }
 
-export function analyzeSeasonalTrends(analysis: LongTermAnalysis): SeasonalTrend[] {
+export function analyzeSeasonalTrends(
+  analysis: LongTermAnalysis
+): SeasonalTrend[] {
   const seasons = {
     Winter: ["December", "January", "February"],
     Spring: ["March", "April", "May"],
     Summer: ["June", "July", "August"],
     Fall: ["September", "October", "November"],
   };
-  
+
   const trends: SeasonalTrend[] = [];
-  
+
   for (const [season, months] of Object.entries(seasons)) {
     const seasonData = analysis.monthlyAverages.filter((m) =>
       months.includes(m.month)
     );
-    
+
     if (seasonData.length > 0) {
       const avgProduction =
         seasonData.reduce((sum, m) => sum + m.averageProduction, 0) /
         seasonData.length;
-      
+
       const avgCapacityFactor =
         seasonData.reduce((sum, m) => sum + m.capacityFactor, 0) /
         seasonData.length;
-      
+
       trends.push({
         season,
         averageProduction: avgProduction,
@@ -198,7 +221,7 @@ export function analyzeSeasonalTrends(analysis: LongTermAnalysis): SeasonalTrend
       });
     }
   }
-  
+
   return trends;
 }
 
@@ -218,7 +241,7 @@ export function generateProductionAlerts(
 ): ProductionAlert[] {
   const alerts: ProductionAlert[] = [];
   const peakAnalysis = analyzePeakProduction(forecast);
-  
+
   // Low production warning
   if (peakAnalysis.lowProductionHours > 24) {
     alerts.push({
@@ -228,7 +251,7 @@ export function generateProductionAlerts(
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // High production alert
   if (peakAnalysis.productiveHours > 30) {
     alerts.push({
@@ -238,36 +261,43 @@ export function generateProductionAlerts(
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // Peak production info
   alerts.push({
     type: "info",
     title: "Peak Production Forecast",
-    message: `Peak production of ${peakAnalysis.peakPower.toFixed(2)} ${forecast.asset.type === "solar" ? "kW" : "MW"} expected at ${peakAnalysis.peakHour}.`,
+    message: `Peak production of ${peakAnalysis.peakPower.toFixed(2)} ${
+      forecast.asset.type === "solar" ? "kW" : "MW"
+    } expected at ${peakAnalysis.peakHour}.`,
     timestamp: new Date().toISOString(),
   });
-  
+
   // Capacity factor warning (if long-term data available)
   if (analysis && analysis.averageCapacityFactor < 20) {
     alerts.push({
       type: "warning",
       title: "Low Capacity Factor",
-      message: `Average capacity factor of ${analysis.averageCapacityFactor.toFixed(1)}% indicates suboptimal site conditions. Consider alternative locations.`,
+      message: `Average capacity factor of ${analysis.averageCapacityFactor.toFixed(
+        1
+      )}% indicates suboptimal site conditions. Consider alternative locations.`,
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   // Weather-based alerts
-  const hasHighWind = forecast.meteorologicalData.some((m) => m.windSpeed && m.windSpeed > 20);
+  const hasHighWind = forecast.meteorologicalData.some(
+    (m) => m.windSpeed && m.windSpeed > 20
+  );
   if (hasHighWind && forecast.asset.type === "wind") {
     alerts.push({
       type: "warning",
       title: "High Wind Speed Alert",
-      message: "Wind speeds exceeding 20 m/s expected. Turbine may enter cut-out mode for safety.",
+      message:
+        "Wind speeds exceeding 20 m/s expected. Turbine may enter cut-out mode for safety.",
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   const hasLowIrradiance = forecast.meteorologicalData.some(
     (m) => m.solarIrradiance && m.solarIrradiance < 100
   );
@@ -275,11 +305,12 @@ export function generateProductionAlerts(
     alerts.push({
       type: "info",
       title: "Cloudy Conditions Expected",
-      message: "Low solar irradiance periods detected. Production may be reduced.",
+      message:
+        "Low solar irradiance periods detected. Production may be reduced.",
       timestamp: new Date().toISOString(),
     });
   }
-  
+
   return alerts;
 }
 
@@ -304,7 +335,7 @@ export function compareLocations(
   const comparisons = analyses.map(({ location, analysis }) => {
     const roi = calculateROI(analysis, costPerKW, electricityRate);
     const carbon = calculateCarbonOffset(analysis);
-    
+
     return {
       location,
       annualProduction: analysis.totalAnnualProduction,
@@ -315,11 +346,10 @@ export function compareLocations(
       rank: 0, // Will be calculated
     };
   });
-  
+
   // Rank by ROI (higher is better)
   comparisons.sort((a, b) => b.roi20Year - a.roi20Year);
   comparisons.forEach((c, i) => (c.rank = i + 1));
-  
+
   return comparisons;
 }
-

@@ -27,11 +27,15 @@ export default function AnalyticsDashboard({
     return null;
   }
 
-  const roi = longTerm ? calculateROI(longTerm, costPerKW, electricityRate) : null;
+  const roi = longTerm
+    ? calculateROI(longTerm, costPerKW, electricityRate)
+    : null;
   const carbon = longTerm ? calculateCarbonOffset(longTerm) : null;
   const peakAnalysis = forecast ? analyzePeakProduction(forecast) : null;
   const seasonalTrends = longTerm ? analyzeSeasonalTrends(longTerm) : null;
-  const alerts = forecast ? generateProductionAlerts(forecast, longTerm || undefined) : [];
+  const alerts = forecast
+    ? generateProductionAlerts(forecast, longTerm || undefined)
+    : [];
 
   return (
     <div className="space-y-6">
@@ -40,7 +44,9 @@ export default function AnalyticsDashboard({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <span className="text-2xl">📊</span>
-            <h2 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Analytics Dashboard
+            </h2>
           </div>
           <button
             onClick={() => setShowAdvanced(!showAdvanced)}
@@ -60,7 +66,9 @@ export default function AnalyticsDashboard({
               <input
                 type="number"
                 value={costPerKW}
-                onChange={(e) => setCostPerKW(parseFloat(e.target.value) || 1500)}
+                onChange={(e) =>
+                  setCostPerKW(parseFloat(e.target.value) || 1500)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -76,7 +84,9 @@ export default function AnalyticsDashboard({
                 type="number"
                 step="0.01"
                 value={electricityRate}
-                onChange={(e) => setElectricityRate(parseFloat(e.target.value) || 0.13)}
+                onChange={(e) =>
+                  setElectricityRate(parseFloat(e.target.value) || 0.13)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -107,11 +117,19 @@ export default function AnalyticsDashboard({
               >
                 <div className="flex items-start gap-3">
                   <span className="text-2xl">
-                    {alert.type === "warning" ? "⚠️" : alert.type === "success" ? "✅" : "ℹ️"}
+                    {alert.type === "warning"
+                      ? "⚠️"
+                      : alert.type === "success"
+                      ? "✅"
+                      : "ℹ️"}
                   </span>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{alert.title}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{alert.message}</p>
+                    <h4 className="font-semibold text-gray-900">
+                      {alert.title}
+                    </h4>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {alert.message}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -144,7 +162,9 @@ export default function AnalyticsDashboard({
             <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Payback Period</p>
               <p className="text-2xl font-bold text-purple-700">
-                {roi.paybackPeriod.toFixed(1)} years
+                {roi.paybackPeriod === Infinity || roi.paybackPeriod > 100
+                  ? "N/A"
+                  : `${roi.paybackPeriod.toFixed(1)} years`}
               </p>
             </div>
 
@@ -158,12 +178,14 @@ export default function AnalyticsDashboard({
             <div className="p-4 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Net Present Value</p>
               <p className="text-2xl font-bold text-emerald-700">
-                ${roi.netPresentValue.toLocaleString()}
+                ${Math.round(roi.netPresentValue).toLocaleString()}
               </p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl">
-              <p className="text-sm text-gray-600 mb-1">Internal Rate of Return</p>
+              <p className="text-sm text-gray-600 mb-1">
+                Internal Rate of Return
+              </p>
               <p className="text-2xl font-bold text-pink-700">
                 {roi.internalRateOfReturn.toFixed(1)}%
               </p>
@@ -182,17 +204,26 @@ export default function AnalyticsDashboard({
             <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Annual CO₂ Offset</p>
               <p className="text-2xl font-bold text-green-700">
-                {(carbon.annualCO2Offset / 1000).toFixed(1)} tons
+                {carbon.annualCO2Offset > 0
+                  ? `${(carbon.annualCO2Offset / 1000).toFixed(1)} tons`
+                  : "0 tons"}
               </p>
               <p className="text-xs text-gray-500 mt-2">
-                Lifetime: {(carbon.lifetimeCO2Offset / 1000).toFixed(0)} tons
+                Lifetime:{" "}
+                {carbon.lifetimeCO2Offset > 0
+                  ? `${(carbon.lifetimeCO2Offset / 1000).toFixed(0)} tons`
+                  : "0 tons"}
               </p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl">
-              <p className="text-sm text-gray-600 mb-1">Equivalent Trees Planted</p>
+              <p className="text-sm text-gray-600 mb-1">
+                Equivalent Trees Planted
+              </p>
               <p className="text-2xl font-bold text-green-700">
-                {carbon.equivalentTrees.toLocaleString()} 🌳
+                {carbon.equivalentTrees > 0
+                  ? `${carbon.equivalentTrees.toLocaleString()} 🌳`
+                  : "0 🌳"}
               </p>
               <p className="text-xs text-gray-500 mt-2">
                 Per year (absorbing CO₂)
@@ -202,17 +233,19 @@ export default function AnalyticsDashboard({
             <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Car Miles Avoided</p>
               <p className="text-2xl font-bold text-blue-700">
-                {carbon.equivalentCarsMilesAvoided.toLocaleString()} mi
+                {carbon.equivalentCarsMilesAvoided > 0
+                  ? `${carbon.equivalentCarsMilesAvoided.toLocaleString()} mi`
+                  : "0 mi"}
               </p>
-              <p className="text-xs text-gray-500 mt-2">
-                Annual equivalent
-              </p>
+              <p className="text-xs text-gray-500 mt-2">Annual equivalent</p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-purple-50 to-indigo-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Homes Powered</p>
               <p className="text-2xl font-bold text-purple-700">
-                {carbon.equivalentHomesElectricity.toFixed(1)} 🏠
+                {carbon.equivalentHomesElectricity > 0
+                  ? `${carbon.equivalentHomesElectricity.toFixed(1)} 🏠`
+                  : "0 🏠"}
               </p>
               <p className="text-xs text-gray-500 mt-2">
                 Average US homes per year
@@ -232,7 +265,8 @@ export default function AnalyticsDashboard({
             <div className="p-4 bg-gradient-to-br from-yellow-50 to-orange-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Peak Power</p>
               <p className="text-2xl font-bold text-orange-700">
-                {peakAnalysis.peakPower.toFixed(2)} {forecast?.asset.type === "solar" ? "kW" : "MW"}
+                {peakAnalysis.peakPower.toFixed(2)}{" "}
+                {forecast?.asset.type === "solar" ? "kW" : "MW"}
               </p>
               <p className="text-xs text-gray-500 mt-2">
                 {new Date(peakAnalysis.peakHour).toLocaleTimeString()}
@@ -242,7 +276,8 @@ export default function AnalyticsDashboard({
             <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Average Power</p>
               <p className="text-2xl font-bold text-blue-700">
-                {peakAnalysis.averagePower.toFixed(2)} {forecast?.asset.type === "solar" ? "kW" : "MW"}
+                {peakAnalysis.averagePower.toFixed(2)}{" "}
+                {forecast?.asset.type === "solar" ? "kW" : "MW"}
               </p>
             </div>
 
@@ -251,9 +286,7 @@ export default function AnalyticsDashboard({
               <p className="text-2xl font-bold text-green-700">
                 {peakAnalysis.productiveHours}h
               </p>
-              <p className="text-xs text-gray-500 mt-2">
-                &gt;50% capacity
-              </p>
+              <p className="text-xs text-gray-500 mt-2">&gt;50% capacity</p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-red-50 to-red-100 rounded-xl">
@@ -261,9 +294,7 @@ export default function AnalyticsDashboard({
               <p className="text-2xl font-bold text-red-700">
                 {peakAnalysis.lowProductionHours}h
               </p>
-              <p className="text-xs text-gray-500 mt-2">
-                &lt;20% capacity
-              </p>
+              <p className="text-xs text-gray-500 mt-2">&lt;20% capacity</p>
             </div>
           </div>
         </div>
@@ -291,7 +322,8 @@ export default function AnalyticsDashboard({
               >
                 <p className="text-sm text-gray-600 mb-1">{trend.season}</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {trend.averageProduction.toFixed(0)} {longTerm?.asset.type === "solar" ? "kWh" : "MWh"}
+                  {trend.averageProduction.toFixed(0)}{" "}
+                  {longTerm?.asset.type === "solar" ? "kWh" : "MWh"}
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
                   CF: {trend.capacityFactor.toFixed(1)}%
@@ -304,4 +336,3 @@ export default function AnalyticsDashboard({
     </div>
   );
 }
-
