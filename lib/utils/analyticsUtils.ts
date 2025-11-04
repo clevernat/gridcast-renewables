@@ -42,15 +42,15 @@ export function calculateROI(
 
   // Calculate total investment
   const systemSize = isSolar
-    ? analysis.asset.dcCapacity
-    : analysis.asset.ratedCapacity * 1000; // Convert MW to kW
+    ? (analysis.asset as any).dcCapacity
+    : (analysis.asset as any).ratedCapacity * 1000; // Convert MW to kW
 
   const totalInvestment = systemSize * costPerKW;
 
   // Annual production in kWh
   const annualProductionKWh = isSolar
-    ? analysis.totalAnnualProduction // Already in kWh
-    : analysis.totalAnnualProduction * 1000; // Convert MWh to kWh
+    ? analysis.annualProduction // Already in kWh
+    : analysis.annualProduction * 1000; // Convert MWh to kWh
 
   // Annual revenue/savings
   const annualRevenue = annualProductionKWh * electricityRate;
@@ -104,8 +104,8 @@ export function calculateCarbonOffset(
 
   // Annual production in kWh
   const annualProductionKWh = isSolar
-    ? analysis.totalAnnualProduction
-    : analysis.totalAnnualProduction * 1000;
+    ? analysis.annualProduction
+    : analysis.annualProduction * 1000;
 
   // Annual CO2 offset in kg
   const annualCO2Offset = annualProductionKWh * gridCarbonIntensity;
@@ -149,15 +149,13 @@ export function analyzePeakProduction(forecast: PowerForecast): PeakAnalysis {
 
   // Find peak hour
   const peakIndex = powers.indexOf(maxPower);
-  const peakHour = new Date(
-    forecast.outputs[peakIndex].timestamp
-  ).toLocaleString();
+  const peakHour = new Date(forecast.outputs[peakIndex].time).toLocaleString();
 
   // Calculate capacity
   const capacity =
     forecast.asset.type === "solar"
-      ? forecast.asset.dcCapacity
-      : forecast.asset.ratedCapacity * 1000; // Convert MW to kW
+      ? (forecast.asset as any).dcCapacity
+      : (forecast.asset as any).ratedCapacity * 1000; // Convert MW to kW
 
   // Count productive hours (>50% capacity)
   const productiveHours = powers.filter((p) => p > capacity * 0.5).length;
@@ -201,7 +199,7 @@ export function analyzeSeasonalTrends(
 
   for (const [season, months] of Object.entries(seasons)) {
     const seasonData = analysis.monthlyAverages.filter((m) =>
-      months.includes(m.month)
+      months.includes(m.monthName)
     );
 
     if (seasonData.length > 0) {
@@ -210,7 +208,7 @@ export function analyzeSeasonalTrends(
         seasonData.length;
 
       const avgCapacityFactor =
-        seasonData.reduce((sum, m) => sum + m.capacityFactor, 0) /
+        seasonData.reduce((sum, m) => sum + m.averageCapacityFactor, 0) /
         seasonData.length;
 
       trends.push({
@@ -338,7 +336,7 @@ export function compareLocations(
 
     return {
       location,
-      annualProduction: analysis.totalAnnualProduction,
+      annualProduction: analysis.annualProduction,
       capacityFactor: analysis.averageCapacityFactor,
       roi20Year: roi.roi20Year,
       paybackPeriod: roi.paybackPeriod,

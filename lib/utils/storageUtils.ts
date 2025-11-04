@@ -151,7 +151,7 @@ export function saveComparisonSlot(
 /**
  * Get comparison slots
  */
-export function getComparisonSlots(): ComparisonData[] {
+export function getComparisonSlots(): (ComparisonData | null)[] {
   try {
     const data = localStorage.getItem(STORAGE_KEYS.COMPARISON_SLOTS);
     return data ? JSON.parse(data) : [null, null, null];

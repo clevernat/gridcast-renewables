@@ -13,6 +13,39 @@ GridCast Renewables is a sophisticated analytical platform that forecasts solar 
 
 ## ✨ Recent Improvements (Latest Version)
 
+### 🔬 Atmospheric Research & Export Features (NEW!)
+
+- ✅ **Atmospheric Research Dashboard**: Comprehensive statistical analysis for EB2-NIW applications
+  - Data quality assessment (completeness, outliers, missing data)
+  - Statistical summary (mean, std dev, min, max for all variables)
+  - Correlation matrix analysis
+  - Trend detection with R² and p-values
+  - Time series decomposition
+- ✅ **Professional PDF Reports**: Generate comprehensive atmospheric research reports
+  - Title page with project information
+  - Location and asset details
+  - Data quality metrics
+  - Statistical analysis tables
+  - Correlation matrices
+  - Trend analysis with significance testing
+  - All charts automatically embedded
+- ✅ **DOCX Export**: Generate Word documents with embedded charts
+  - Professional formatting suitable for research documentation
+  - All atmospheric data tables included
+  - Automatic chart capture and embedding
+  - Ready for EB2-NIW green card applications
+- ✅ **CSV/JSON Export**: Export forecast and long-term data with proper date formatting
+- ✅ **Screenshot Capture**: Save high-quality images of charts and maps
+- ✅ **Batch Analysis**: Upload CSV files to analyze multiple locations simultaneously
+
+### 🎨 UI/UX Improvements
+
+- ✅ **Renewable Energy Favicon**: Professional icon with sun, wind turbine, and lightning bolt
+- ✅ **Light Mode Only**: Removed dark mode for consistent, professional appearance
+- ✅ **Modern Tab Interface**: Analytics and Research tabs for advanced features
+- ✅ **Location History**: Track and revisit previously analyzed locations
+- ✅ **User Preferences**: Customizable defaults for asset type, years, tooltips
+
 ### Enhanced National Energy Map
 
 - ✅ **User Location Marker**: Blue pulsing marker shows your searched location on the map
@@ -33,14 +66,6 @@ GridCast Renewables is a sophisticated analytical platform that forecasts solar 
 - ✅ **Increased Chart Height**: 550px for better visibility
 - ✅ **Smart Label Intervals**: Shows every 3rd time label to reduce clutter
 - ✅ **Improved Grid Spacing**: Better margins for all axes (60px left, 140px right, 80px bottom)
-
-### UI/UX Enhancements
-
-- ✅ **Modern Gradient Design**: Beautiful gradients throughout the interface
-- ✅ **Responsive Layout**: Works perfectly on mobile, tablet, and desktop
-- ✅ **Address Autocomplete**: Real-time suggestions using OpenStreetMap
-- ✅ **Input Validation**: Clear error messages and helpful hints
-- ✅ **Loading States**: Smooth animations during data fetching
 
 ## 🎯 Core Features
 
@@ -97,6 +122,40 @@ GridCast Renewables is a sophisticated analytical platform that forecasts solar 
 - **Capacity Factor Analysis**: Monthly and annual capacity factor calculations
 - **Seasonal Insights**: Identify best and worst performing months
 - **Investment Metrics**: Data-driven insights for financial viability assessment
+
+### 5. Analytics Dashboard
+
+- **Key Performance Metrics**: Total energy, peak power, average capacity factor
+- **Statistical Analysis**: Mean, median, standard deviation of power output
+- **Efficiency Metrics**: Best/worst hours, production variability
+- **Comparative Analysis**: Short-term vs long-term performance
+- **Visual Indicators**: Color-coded metrics with trend indicators
+
+### 6. Atmospheric Research Tools
+
+- **Data Quality Assessment**:
+  - Quality score calculation
+  - Missing data detection
+  - Outlier identification
+  - Completeness metrics
+- **Statistical Analysis**:
+  - Comprehensive summary statistics
+  - Correlation matrix (all variables)
+  - Trend detection with significance testing
+  - Time series decomposition
+- **Professional Reporting**:
+  - PDF reports with embedded charts
+  - DOCX documents for research documentation
+  - CSV/JSON data export
+  - Screenshot capture for presentations
+
+### 7. Batch Analysis & Multi-Location Support
+
+- **CSV Upload**: Analyze multiple locations simultaneously
+- **Batch Processing**: Process up to 100 locations at once
+- **Comparative Analysis**: Compare energy potential across locations
+- **Export Results**: Download batch analysis results as CSV
+- **Location History**: Track and revisit previously analyzed locations
 
 ## ⚙️ How Configuration Affects Calculations
 
@@ -274,11 +333,17 @@ graph TB
 - Tailwind CSS 4.0
 - ECharts (charting)
 - Mapbox GL JS (mapping)
+- html2canvas (screenshot capture)
 
 **Backend:**
 
 - Next.js API Routes (serverless)
 - Axios for HTTP requests
+
+**Document Generation:**
+
+- jsPDF + jspdf-autotable (PDF reports)
+- docx (Word document generation)
 
 **Data Sources:**
 

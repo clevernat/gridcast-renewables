@@ -395,8 +395,12 @@ export async function generateAtmosphericResearchDOCX(
           },
         }),
         new Paragraph({
-          text: "Note: Values range from -1 (perfect negative correlation) to +1 (perfect positive correlation)",
-          italics: true,
+          children: [
+            new TextRun({
+              text: "Note: Values range from -1 (perfect negative correlation) to +1 (perfect positive correlation)",
+              italics: true,
+            }),
+          ],
           spacing: { before: 200, after: 300 },
         })
       );
@@ -634,6 +638,7 @@ export async function generateAtmosphericResearchDOCX(
                   width: 600,
                   height: 400,
                 },
+                type: "png",
               }),
             ],
             spacing: { after: 300 },
@@ -666,6 +671,7 @@ export async function generateAtmosphericResearchDOCX(
                   width: 600,
                   height: 400,
                 },
+                type: "png",
               }),
             ],
             spacing: { after: 300 },
@@ -767,6 +773,7 @@ export async function generateAtmosphericResearchDOCX(
                     width: 600,
                     height: 400,
                   },
+                  type: "png",
                 }),
               ],
               spacing: { after: 300 },

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface AddressSuggestion {
   display_name: string;
@@ -16,11 +16,11 @@ interface PlaceResult {
 export function useOpenStreetMapAutocomplete(
   onPlaceSelected: (place: PlaceResult) => void
 ) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Fetch suggestions from Nominatim (OpenStreetMap)
   const fetchSuggestions = useCallback(async (searchQuery: string) => {
@@ -35,14 +35,14 @@ export function useOpenStreetMapAutocomplete(
       // Nominatim API - Free and no API key required
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?` +
-        `q=${encodeURIComponent(searchQuery)}` +
-        `&format=json` +
-        `&addressdetails=1` +
-        `&limit=5` +
-        `&countrycodes=us`, // Restrict to US addresses
+          `q=${encodeURIComponent(searchQuery)}` +
+          `&format=json` +
+          `&addressdetails=1` +
+          `&limit=5` +
+          `&countrycodes=us`, // Restrict to US addresses
         {
           headers: {
-            'User-Agent': 'GridCast-Renewables', // Required by Nominatim
+            "User-Agent": "GridCast-Renewables", // Required by Nominatim
           },
         }
       );
@@ -53,7 +53,7 @@ export function useOpenStreetMapAutocomplete(
         setShowSuggestions(true);
       }
     } catch (error) {
-      console.error('Error fetching address suggestions:', error);
+      console.error("Error fetching address suggestions:", error);
       setSuggestions([]);
     } finally {
       setIsLoading(false);
@@ -122,4 +122,3 @@ export function useOpenStreetMapAutocomplete(
     handleFocus,
   };
 }
-

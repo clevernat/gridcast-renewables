@@ -79,12 +79,12 @@ export function exportLongTermToCSV(analysis: LongTermAnalysis): void {
   const rows = analysis.monthlyAverages.map((month) => [
     month.month,
     month.averageProduction.toFixed(2),
-    month.capacityFactor.toFixed(2),
-    month.daysAnalyzed,
+    month.averageCapacityFactor.toFixed(2),
+    (month as any).daysAnalyzed || "N/A",
   ]);
 
   const csvContent = [
-    `# Long-Term Analysis (${analysis.yearsAnalyzed} years)`,
+    `# Long-Term Analysis`,
     `# Location: ${
       analysis.location.address ||
       `${analysis.location.latitude}, ${analysis.location.longitude}`
@@ -93,7 +93,7 @@ export function exportLongTermToCSV(analysis: LongTermAnalysis): void {
     `# Generated: ${new Date().toLocaleString()}`,
     "",
     `# Summary Statistics`,
-    `# Total Annual Production: ${analysis.totalAnnualProduction.toFixed(2)} ${
+    `# Total Annual Production: ${analysis.annualProduction.toFixed(2)} ${
       analysis.asset.type === "solar" ? "kWh" : "MWh"
     }`,
     `# Average Capacity Factor: ${analysis.averageCapacityFactor.toFixed(2)}%`,
@@ -237,11 +237,10 @@ Location: ${
     analysis.location.address ||
     `${analysis.location.latitude}, ${analysis.location.longitude}`
   }
-Analysis Period: ${analysis.yearsAnalyzed} years
 Generated: ${new Date().toLocaleString()}
 
 Annual Performance:
-- Total Annual Production: ${analysis.totalAnnualProduction.toFixed(2)} ${
+- Total Annual Production: ${analysis.annualProduction.toFixed(2)} ${
     analysis.asset.type === "solar" ? "kWh" : "MWh"
   }
 - Average Capacity Factor: ${analysis.averageCapacityFactor.toFixed(2)}%

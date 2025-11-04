@@ -26,7 +26,7 @@ import { generateAtmosphericResearchData } from "@/lib/utils/atmosphericResearch
 interface ExportMenuProps {
   forecast?: PowerForecast | null;
   longTerm?: LongTermAnalysis | null;
-  activeTab: "forecast" | "longterm" | "map";
+  activeTab: "forecast" | "longterm" | "map" | "analytics" | "research";
 }
 
 export default function ExportMenu({
@@ -86,7 +86,11 @@ export default function ExportMenu({
               )
             : null;
 
-        await generateAtmosphericResearchPDF(forecast, longTerm, researchData);
+        await generateAtmosphericResearchPDF(
+          forecast,
+          longTerm ?? null,
+          researchData
+        );
       } else {
         // Generate quick summary PDF
         await generateQuickSummaryPDF(forecast);
@@ -113,7 +117,11 @@ export default function ExportMenu({
             )
           : null;
 
-      await generateAtmosphericResearchDOCX(forecast, longTerm, researchData);
+      await generateAtmosphericResearchDOCX(
+        forecast,
+        longTerm ?? null,
+        researchData
+      );
       // Success - close the menu
       setIsOpen(false);
     } catch (error) {
