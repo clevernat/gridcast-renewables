@@ -97,7 +97,15 @@ export async function generateAtmosphericResearchDOCX(
         spacing: { after: 200 },
       }),
       new Paragraph({
-        text: `Generated: ${new Date().toLocaleString()}`,
+        text: `Generated: ${new Date().toLocaleString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          timeZoneName: "short",
+        })}`,
         alignment: AlignmentType.CENTER,
         spacing: { after: 800 },
       }),
