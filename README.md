@@ -11,34 +11,139 @@ GridCast Renewables is a sophisticated analytical platform that forecasts solar 
 - **⚡ Grid Stability**: Enabling better planning and integration of renewable resources
 - **💰 Investment Optimization**: Providing data-driven insights for renewable energy investments
 
+## ✨ Recent Improvements (Latest Version)
+
+### Enhanced National Energy Map
+
+- ✅ **User Location Marker**: Blue pulsing marker shows your searched location on the map
+- ✅ **Energy Potential at Your Location**: Real-time solar/wind data for your exact coordinates
+- ✅ **National Average Comparison**: See how your location compares (% above/below average)
+- ✅ **Visual Radius**: 50km circle around your location for context
+- ✅ **Smart Popups**: Detailed information with coordinates, address, and energy metrics
+- ✅ **Zoom to Location**: One-click button to center map on your location
+
+### Improved Chart Readability
+
+- ✅ **Optimized Label Spacing**: X-axis labels no longer overlap
+- ✅ **Better Font Sizing**: Reduced font sizes for cleaner appearance (10-11px)
+- ✅ **Multi-line Axis Labels**: Y-axis labels split across lines to prevent overlap
+- ✅ **Increased Chart Height**: 550px for better visibility
+- ✅ **Smart Label Intervals**: Shows every 3rd time label to reduce clutter
+- ✅ **Improved Grid Spacing**: Better margins for all axes (60px left, 140px right, 80px bottom)
+
+### UI/UX Enhancements
+
+- ✅ **Modern Gradient Design**: Beautiful gradients throughout the interface
+- ✅ **Responsive Layout**: Works perfectly on mobile, tablet, and desktop
+- ✅ **Address Autocomplete**: Real-time suggestions using OpenStreetMap
+- ✅ **Input Validation**: Clear error messages and helpful hints
+- ✅ **Loading States**: Smooth animations during data fetching
+
 ## 🎯 Core Features
 
 ### 1. Site & Asset Configuration
 
-- Location Input: Enter any U.S. address or GPS coordinates
-- Asset Types: Solar (DC capacity) and Wind (rated capacity, hub height)
-- Geocoding: Automatic address-to-coordinate conversion
+- **Location Input**: Enter any U.S. address or GPS coordinates
+- **Smart Geocoding**: Automatic address-to-coordinate conversion using OpenStreetMap Nominatim API
+- **Address Autocomplete**: Real-time suggestions as you type (completely free, no API key needed)
+- **Asset Types**:
+  - **Solar**: DC capacity (kW), system losses (%), optional tilt/azimuth
+  - **Wind**: Rated capacity (MW), hub height (m), cut-in/rated/cut-out speeds (m/s)
+- **Default Values**: Pre-filled with typical residential/commercial values
+- **Validation**: Real-time input validation with helpful error messages
 
 ### 2. High-Resolution Power Forecast (48 Hours)
 
-- Hourly Power Output: Precise kWh/MWh predictions
-- Meteorological Drivers: Solar irradiance, cloud cover, wind speed
-- Interactive Charts: Built with ECharts
-- Capacity Factor: Real-time asset utilization
+- **Hourly Power Output**: Precise kWh/MWh predictions for next 48 hours
+- **Meteorological Drivers**: Solar irradiance, cloud cover, wind speed, temperature
+- **Interactive Charts**: Built with ECharts with optimized label spacing
+- **Multi-Axis Visualization**:
+  - Power output (kW/MW)
+  - Solar irradiance (W/m²) or Wind speed (m/s)
+  - Capacity factor and cloud cover (%)
+- **Real-time Calculations**:
+  - Total energy production forecast
+  - Average capacity factor
+  - Temperature corrections for solar
+  - Air density corrections for wind
+- **Configuration Impact**: All asset parameters (DC capacity, system losses, hub height, etc.) directly affect power calculations
 
 ### 3. National Energy Map
 
-- Spatial Visualization: Heatmap across continental U.S.
-- Toggle Views: Solar and Wind potential
-- Time Animation: 24-hour slider
-- Powered by Mapbox GL JS
+- **Spatial Visualization**: Heatmap across continental U.S. (~100 grid points)
+- **Toggle Views**: Solar irradiance and Wind speed potential
+- **Time Animation**: 24-hour slider with play/pause controls
+- **User Location Marker**: Blue pulsing marker at your searched location
+- **Location Analytics**:
+  - Real-time energy potential at your exact coordinates
+  - Comparison with national average (percentage above/below)
+  - 50km radius visualization around your location
+  - Detailed popup with coordinates and address
+- **Interactive Controls**: Zoom to location, speed controls, hour selection
+- **Powered by**: Mapbox GL JS with custom heatmap rendering
 
 ### 4. Long-Term Viability Analysis
 
-- Historical Data: 5+ years of weather data
-- Monthly Averages: Energy production estimates
-- Annual Production: Total yearly forecast
-- Investment Insights: Financial viability data
+- **Historical Data**: 5+ years of weather data from NASA POWER and Open-Meteo
+- **Monthly Averages**: Energy production estimates for each month
+- **Annual Production**: Total yearly forecast (kWh/year or MWh/year)
+- **Capacity Factor Analysis**: Monthly and annual capacity factor calculations
+- **Seasonal Insights**: Identify best and worst performing months
+- **Investment Metrics**: Data-driven insights for financial viability assessment
+
+## ⚙️ How Configuration Affects Calculations
+
+All asset configuration parameters directly impact the power output calculations:
+
+### Solar Configuration Impact
+
+**DC Capacity (kW)**:
+
+- Directly scales power output: `Power ∝ DC_Capacity`
+- Example: Doubling from 5kW to 10kW doubles the power output
+
+**System Losses (%)**:
+
+- Reduces efficiency: `Efficiency = (100 - Losses) / 100`
+- Example: 14% losses → 86% efficiency, 30% losses → 70% efficiency
+- Typical range: 10-20% (includes inverter, wiring, soiling losses)
+
+### Wind Configuration Impact
+
+**Rated Capacity (MW)**:
+
+- Maximum power output at rated wind speed
+- Scales the entire power curve proportionally
+
+**Hub Height (m)**:
+
+- Higher hub = stronger winds via power law extrapolation
+- Example: 80m → 120m can increase power by 15-25%
+- Formula: `v₂ = v₁ × (h₂/h₁)^0.14`
+
+**Cut-in Speed (m/s)**:
+
+- Minimum wind speed to start generating power
+- Lower cut-in = more operating hours
+
+**Rated Speed (m/s)**:
+
+- Wind speed at which turbine reaches maximum power
+- Affects the power curve slope
+
+**Cut-out Speed (m/s)**:
+
+- Maximum safe operating wind speed
+- Turbine shuts down above this for safety
+
+### Testing Configuration Changes
+
+Try these experiments to see real-time impacts:
+
+1. **Solar**: Change DC Capacity from 7kW to 14kW → Power output doubles
+2. **Solar**: Change System Losses from 14% to 30% → Power output decreases ~18%
+3. **Wind**: Change Hub Height from 80m to 120m → Power output increases ~20%
+4. **Wind**: Change Rated Capacity from 1.5MW to 3.0MW → Max power doubles
 
 ## 🔬 Scientific Models & Formulas
 

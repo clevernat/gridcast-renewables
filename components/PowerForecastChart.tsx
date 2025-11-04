@@ -96,12 +96,17 @@ export default function PowerForecastChart({
             ]
           : ["Power Output", "Capacity Factor", "Wind Speed"],
         top: 40,
+        textStyle: {
+          fontSize: 11,
+        },
+        itemGap: 15,
       },
       grid: {
-        left: "3%",
-        right: "4%",
-        bottom: "3%",
-        containLabel: true,
+        left: "60px",
+        right: "140px",
+        bottom: "80px",
+        top: "100px",
+        containLabel: false,
       },
       xAxis: {
         type: "category",
@@ -110,11 +115,18 @@ export default function PowerForecastChart({
         axisLabel: {
           formatter: (value: string) => {
             const date = new Date(value);
-            return `${
-              date.getMonth() + 1
-            }/${date.getDate()} ${date.getHours()}:00`;
+            const hours = date.getHours();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            // Show date only every 6 hours to reduce clutter
+            if (hours % 6 === 0) {
+              return `${month}/${day}\n${hours}:00`;
+            }
+            return `${hours}:00`;
           },
           rotate: 45,
+          fontSize: 10,
+          interval: 2, // Show every 3rd label to prevent overlap
         },
       },
       yAxis: [
@@ -122,25 +134,40 @@ export default function PowerForecastChart({
           type: "value",
           name: `Power (${unit})`,
           position: "left",
+          nameTextStyle: {
+            fontSize: 11,
+            padding: [0, 0, 0, 0],
+          },
           axisLabel: {
             formatter: "{value}",
+            fontSize: 10,
           },
         },
         {
           type: "value",
-          name: isSolar ? "Irradiance (W/m²)" : "Wind Speed (m/s)",
+          name: isSolar ? "Irradiance\n(W/m²)" : "Wind Speed\n(m/s)",
           position: "right",
+          nameTextStyle: {
+            fontSize: 11,
+            padding: [0, 0, 0, 5],
+          },
           axisLabel: {
             formatter: "{value}",
+            fontSize: 10,
           },
         },
         {
           type: "value",
-          name: "Percentage (%)",
+          name: "Percentage\n(%)",
           position: "right",
-          offset: 60,
+          offset: 70,
+          nameTextStyle: {
+            fontSize: 11,
+            padding: [0, 0, 0, 5],
+          },
           axisLabel: {
             formatter: "{value}%",
+            fontSize: 10,
           },
           max: 100,
         },
@@ -233,7 +260,7 @@ export default function PowerForecastChart({
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <div ref={chartRef} style={{ width: "100%", height: "500px" }} />
+      <div ref={chartRef} style={{ width: "100%", height: "550px" }} />
     </div>
   );
 }

@@ -23,12 +23,14 @@ export default function Home() {
   );
   const [error, setError] = useState("");
   const [mapType, setMapType] = useState<"solar" | "wind">("solar");
+  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
 
   const handleGenerateForecast = async (location: Location, asset: Asset) => {
     setLoading(true);
     setError("");
     setForecast(null);
     setLongTermData(null);
+    setCurrentLocation(location); // Save the location for the map
 
     try {
       // Generate 48-hour forecast
@@ -211,7 +213,11 @@ export default function Home() {
 
               {activeTab === "map" && (
                 <div className="animate-fadeIn">
-                  <NationalEnergyMap type={mapType} onTypeChange={setMapType} />
+                  <NationalEnergyMap
+                    type={mapType}
+                    onTypeChange={setMapType}
+                    userLocation={currentLocation}
+                  />
                 </div>
               )}
             </div>

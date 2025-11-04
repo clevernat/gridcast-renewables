@@ -41,6 +41,19 @@ body {
   animation: fadeIn 0.5s ease-out;
 }
 
+/* Pulse animation for user location marker */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
 /* Grid Background Pattern */
 .bg-grid-white\/\[0\.05\] {
   background-image: linear-gradient(
