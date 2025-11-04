@@ -280,28 +280,15 @@ export default function Home() {
               Supporting U.S. Energy Independence and Clean Energy Transition
               through advanced predictive analytics and scientific modeling
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400 mb-6">
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                Next.js 16
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                TypeScript
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
-                ECharts
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-pink-500 rounded-full"></span>
-                Mapbox GL JS
-              </span>
-            </div>
             <div className="pt-6 border-t border-white/10">
               <p className="text-xs text-gray-500">
-                © 2024 GridCast Renewables. Built with ❤️ for a sustainable
-                energy future.
+                ©{" "}
+                {new Date().toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })}{" "}
+                GridCast Renewables. Built with ❤️ for a sustainable energy
+                future.
               </p>
             </div>
           </div>
