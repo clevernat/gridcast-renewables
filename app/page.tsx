@@ -9,7 +9,7 @@ import ExportMenu from "@/components/ExportMenu";
 import LocationHistory from "@/components/LocationHistory";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import AtmosphericResearchDashboard from "@/components/AtmosphericResearchDashboard";
-import BatchAnalysis from "@/components/BatchAnalysis";
+import Link from "next/link";
 import {
   Asset,
   Location,
@@ -34,7 +34,6 @@ export default function Home() {
   const [mapType, setMapType] = useState<"solar" | "wind">("solar");
   const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const [showBatchAnalysis, setShowBatchAnalysis] = useState(false);
 
   // Load user preferences on mount
   useEffect(() => {
@@ -169,13 +168,13 @@ export default function Home() {
             )}
 
             {/* Batch Analysis Button */}
-            <button
-              onClick={() => setShowBatchAnalysis(true)}
+            <Link
+              href="/batch-analysis"
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-3 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
               <span>📊</span>
               <span>Multi-Location Batch Analysis</span>
-            </button>
+            </Link>
           </div>
 
           {/* Right Column - Results */}
@@ -409,11 +408,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Batch Analysis Modal */}
-      {showBatchAnalysis && (
-        <BatchAnalysis onClose={() => setShowBatchAnalysis(false)} />
-      )}
     </div>
   );
 }

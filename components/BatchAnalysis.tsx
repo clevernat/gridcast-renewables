@@ -10,10 +10,14 @@ import {
 } from "@/types";
 
 interface BatchAnalysisProps {
-  onClose: () => void;
+  onClose: (() => void) | null;
+  isFullPage?: boolean;
 }
 
-export default function BatchAnalysis({ onClose }: BatchAnalysisProps) {
+export default function BatchAnalysis({
+  onClose,
+  isFullPage = false,
+}: BatchAnalysisProps) {
   const [locations, setLocations] = useState<BatchLocation[]>([]);
   const [results, setResults] = useState<BatchAnalysisResult[]>([]);
   const [progress, setProgress] = useState<BatchAnalysisProgress | null>(null);
@@ -65,7 +69,9 @@ export default function BatchAnalysis({ onClose }: BatchAnalysisProps) {
       } else {
         asset = {
           type: "wind",
-          ratedCapacity: parseFloat(row.rated_capacity || row.capacity || "1.5"),
+          ratedCapacity: parseFloat(
+            row.rated_capacity || row.capacity || "1.5"
+          ),
           hubHeight: parseFloat(row.hub_height || row.height || "80"),
           cutInSpeed: parseFloat(row.cut_in_speed || "3"),
           ratedSpeed: parseFloat(row.rated_speed || "12"),
@@ -142,7 +148,9 @@ export default function BatchAnalysis({ onClose }: BatchAnalysisProps) {
             percentage: ((prev!.completed + 1) / prev!.total) * 100,
           }));
         } else {
-          throw new Error(forecastData.error?.message || "Failed to fetch forecast");
+          throw new Error(
+            forecastData.error?.message || "Failed to fetch forecast"
+          );
         }
       } catch (error: any) {
         console.error(`Error processing ${loc.name}:`, error);
@@ -182,8 +190,10 @@ export default function BatchAnalysis({ onClose }: BatchAnalysisProps) {
           : "N/A";
         const avgCapacity = r.forecast
           ? (
-              r.forecast.outputs.reduce((sum, o) => sum + (o.capacity || 0), 0) /
-              r.forecast.outputs.length
+              r.forecast.outputs.reduce(
+                (sum, o) => sum + (o.capacity || 0),
+                0
+              ) / r.forecast.outputs.length
             ).toFixed(1)
           : "N/A";
 
@@ -209,14 +219,16 @@ export default function BatchAnalysis({ onClose }: BatchAnalysisProps) {
     URL.revokeObjectURL(url);
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+  const content = (
+    <div className="bg-white rounded-2xl shadow-2xl w-full">
+      {!isFullPage && (
         <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-2xl">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">📊 Multi-Location Batch Analysis</h2>
+            <h2 className="text-2xl font-bold">
+              📊 Multi-Location Batch Analysis
+            </h2>
             <button
-              onClick={onClose}
+              onClick={onClose || undefined}
               className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all"
             >
               ✕
@@ -226,157 +238,183 @@ export default function BatchAnalysis({ onClose }: BatchAnalysisProps) {
             Upload a CSV file with multiple locations for comparative analysis
           </p>
         </div>
+      )}
 
-        <div className="p-6 space-y-6">
-          {/* CSV Upload */}
-          <div className="bg-gradient-to-br from-purple-50 to-pink-100 p-6 rounded-xl border border-purple-200">
-            <h3 className="font-bold text-gray-900 mb-3">📁 Upload CSV File</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              CSV should include columns: name, latitude, longitude, type (solar/wind), capacity
+      <div className="p-6 space-y-6">
+        {/* CSV Upload */}
+        <div className="bg-gradient-to-br from-purple-50 to-pink-100 p-6 rounded-xl border border-purple-200">
+          <h3 className="font-bold text-gray-900 mb-3">📁 Upload CSV File</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            CSV should include columns: name, latitude, longitude, type
+            (solar/wind), capacity
+          </p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none p-2"
+          />
+          {locations.length > 0 && (
+            <p className="text-sm text-green-600 mt-2">
+              ✓ Loaded {locations.length} locations
             </p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-white focus:outline-none p-2"
-            />
-            {locations.length > 0 && (
-              <p className="text-sm text-green-600 mt-2">
-                ✓ Loaded {locations.length} locations
-              </p>
-            )}
-          </div>
+          )}
+        </div>
 
-          {/* Sample CSV Template */}
-          <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
-            <h4 className="font-semibold text-gray-900 mb-2">📋 Sample CSV Format:</h4>
-            <pre className="text-xs bg-white p-3 rounded border border-gray-300 overflow-x-auto">
-              {`name,latitude,longitude,type,capacity
+        {/* Sample CSV Template */}
+        <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
+          <h4 className="font-semibold text-gray-900 mb-2">
+            📋 Sample CSV Format:
+          </h4>
+          <pre className="text-xs bg-white p-3 rounded border border-gray-300 overflow-x-auto">
+            {`name,latitude,longitude,type,capacity
 Phoenix Solar,33.4484,-112.0740,solar,10
 Texas Wind,32.4707,-100.4065,wind,2.5
 California Solar,37.7749,-122.4194,solar,7`}
-            </pre>
-          </div>
-
-          {/* Process Button */}
-          {locations.length > 0 && !isProcessing && results.length === 0 && (
-            <button
-              onClick={processBatch}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg"
-            >
-              🚀 Process {locations.length} Locations
-            </button>
-          )}
-
-          {/* Progress Bar */}
-          {progress && isProcessing && (
-            <div className="bg-gradient-to-br from-yellow-50 to-orange-100 p-6 rounded-xl border border-yellow-200">
-              <h3 className="font-bold text-gray-900 mb-3">⏳ Processing...</h3>
-              <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 h-4 rounded-full transition-all duration-300"
-                  style={{ width: `${progress.percentage}%` }}
-                ></div>
-              </div>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-600">Progress:</span>{" "}
-                  <strong>
-                    {progress.completed}/{progress.total}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-gray-600">Failed:</span>{" "}
-                  <strong className="text-red-600">{progress.failed}</strong>
-                </div>
-                <div>
-                  <span className="text-gray-600">Current:</span>{" "}
-                  <strong className="text-blue-600">{progress.currentLocation}</strong>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Results Table */}
-          {results.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="font-bold text-gray-900 text-lg">📈 Analysis Results</h3>
-                <button
-                  onClick={downloadResults}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all"
-                >
-                  📥 Download CSV
-                </button>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                      <th className="p-3 text-left">Rank</th>
-                      <th className="p-3 text-left">Location</th>
-                      <th className="p-3 text-left">Coordinates</th>
-                      <th className="p-3 text-right">Total Energy</th>
-                      <th className="p-3 text-right">Avg Capacity</th>
-                      <th className="p-3 text-right">Score</th>
-                      <th className="p-3 text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.map((result, idx) => (
-                      <tr
-                        key={idx}
-                        className={`border-b ${
-                          idx % 2 === 0 ? "bg-gray-50" : "bg-white"
-                        } hover:bg-blue-50 transition-colors`}
-                      >
-                        <td className="p-3 font-bold text-blue-600">#{result.rank}</td>
-                        <td className="p-3">{result.location.name}</td>
-                        <td className="p-3 text-xs text-gray-600">
-                          {result.location.location.latitude.toFixed(2)}°,{" "}
-                          {result.location.location.longitude.toFixed(2)}°
-                        </td>
-                        <td className="p-3 text-right">
-                          {result.forecast
-                            ? `${result.forecast.outputs
-                                .reduce((sum, o) => sum + o.power, 0)
-                                .toFixed(2)} ${
-                                result.forecast.asset.type === "solar" ? "kWh" : "MWh"
-                              }`
-                            : "N/A"}
-                        </td>
-                        <td className="p-3 text-right">
-                          {result.forecast
-                            ? `${(
-                                result.forecast.outputs.reduce(
-                                  (sum, o) => sum + (o.capacity || 0),
-                                  0
-                                ) / result.forecast.outputs.length
-                              ).toFixed(1)}%`
-                            : "N/A"}
-                        </td>
-                        <td className="p-3 text-right font-semibold">
-                          {result.score?.toFixed(2) || "N/A"}
-                        </td>
-                        <td className="p-3 text-center">
-                          {result.error ? (
-                            <span className="text-red-600 font-semibold">❌ Failed</span>
-                          ) : (
-                            <span className="text-green-600 font-semibold">✓ Success</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+          </pre>
         </div>
+
+        {/* Process Button */}
+        {locations.length > 0 && !isProcessing && results.length === 0 && (
+          <button
+            onClick={processBatch}
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all shadow-lg"
+          >
+            🚀 Process {locations.length} Locations
+          </button>
+        )}
+
+        {/* Progress Bar */}
+        {progress && isProcessing && (
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-100 p-6 rounded-xl border border-yellow-200">
+            <h3 className="font-bold text-gray-900 mb-3">⏳ Processing...</h3>
+            <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
+              <div
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 h-4 rounded-full transition-all duration-300"
+                style={{ width: `${progress.percentage}%` }}
+              ></div>
+            </div>
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div>
+                <span className="text-gray-600">Progress:</span>{" "}
+                <strong>
+                  {progress.completed}/{progress.total}
+                </strong>
+              </div>
+              <div>
+                <span className="text-gray-600">Failed:</span>{" "}
+                <strong className="text-red-600">{progress.failed}</strong>
+              </div>
+              <div>
+                <span className="text-gray-600">Current:</span>{" "}
+                <strong className="text-blue-600">
+                  {progress.currentLocation}
+                </strong>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Results Table */}
+        {results.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-gray-900 text-lg">
+                📈 Analysis Results
+              </h3>
+              <button
+                onClick={downloadResults}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all"
+              >
+                📥 Download CSV
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                    <th className="p-3 text-left">Rank</th>
+                    <th className="p-3 text-left">Location</th>
+                    <th className="p-3 text-left">Coordinates</th>
+                    <th className="p-3 text-right">Total Energy</th>
+                    <th className="p-3 text-right">Avg Capacity</th>
+                    <th className="p-3 text-right">Score</th>
+                    <th className="p-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.map((result, idx) => (
+                    <tr
+                      key={idx}
+                      className={`border-b ${
+                        idx % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      } hover:bg-blue-50 transition-colors`}
+                    >
+                      <td className="p-3 font-bold text-blue-600">
+                        #{result.rank}
+                      </td>
+                      <td className="p-3">{result.location.name}</td>
+                      <td className="p-3 text-xs text-gray-600">
+                        {result.location.location.latitude.toFixed(2)}°,{" "}
+                        {result.location.location.longitude.toFixed(2)}°
+                      </td>
+                      <td className="p-3 text-right">
+                        {result.forecast
+                          ? `${result.forecast.outputs
+                              .reduce((sum, o) => sum + o.power, 0)
+                              .toFixed(2)} ${
+                              result.forecast.asset.type === "solar"
+                                ? "kWh"
+                                : "MWh"
+                            }`
+                          : "N/A"}
+                      </td>
+                      <td className="p-3 text-right">
+                        {result.forecast
+                          ? `${(
+                              result.forecast.outputs.reduce(
+                                (sum, o) => sum + (o.capacity || 0),
+                                0
+                              ) / result.forecast.outputs.length
+                            ).toFixed(1)}%`
+                          : "N/A"}
+                      </td>
+                      <td className="p-3 text-right font-semibold">
+                        {result.score?.toFixed(2) || "N/A"}
+                      </td>
+                      <td className="p-3 text-center">
+                        {result.error ? (
+                          <span className="text-red-600 font-semibold">
+                            ❌ Failed
+                          </span>
+                        ) : (
+                          <span className="text-green-600 font-semibold">
+                            ✓ Success
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  if (isFullPage) {
+    return content;
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+        {content}
       </div>
     </div>
   );
 }
-
