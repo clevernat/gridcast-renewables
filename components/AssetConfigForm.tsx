@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AssetType, Asset, Location, SolarAsset, WindAsset } from "@/types";
+import { useGooglePlacesAutocomplete } from "@/hooks/useGooglePlacesAutocomplete";
 
 interface AssetConfigFormProps {
   onSubmit: (location: Location, asset: Asset) => void;
@@ -17,6 +18,13 @@ export default function AssetConfigForm({
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [useCoordinates, setUseCoordinates] = useState(false);
+
+  // Google Places Autocomplete
+  const { inputRef, isLoaded } = useGooglePlacesAutocomplete((place) => {
+    setAddress(place.address);
+    setLatitude(place.latitude.toString());
+    setLongitude(place.longitude.toString());
+  });
 
   // Solar fields
   const [dcCapacity, setDcCapacity] = useState("");
@@ -183,15 +191,22 @@ export default function AssetConfigForm({
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
               Address
+              {isLoaded && (
+                <span className="ml-2 text-xs text-green-600 font-normal">
+                  ✓ Autocomplete enabled
+                </span>
+              )}
             </label>
             <div className="flex gap-2">
               <input
+                ref={inputRef}
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="e.g., 1600 Amphitheatre Parkway, Mountain View, CA"
+                placeholder="Start typing an address..."
                 className="flex-1 px-4 py-3 !bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
                 style={{ color: "#1f2937", backgroundColor: "#ffffff" }}
+                autoComplete="off"
               />
               <button
                 type="button"

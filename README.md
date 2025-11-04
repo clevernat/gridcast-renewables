@@ -204,12 +204,16 @@ graph TB
    cp .env.example .env.local
    \`\`\`
 
-Edit \`.env.local\` and add your Mapbox token:
+Edit \`.env.local\` and add your API keys:
 \`\`\`
 NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token_here
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
 \`\`\`
 
-Get a free token at https://www.mapbox.com/
+**Get API Keys:**
+
+- **Mapbox Token**: Get a free token at https://www.mapbox.com/
+- **Google Maps API Key**: See [Google Maps Setup Guide](docs/GOOGLE_MAPS_SETUP.md) for detailed instructions
 
 4. Run development server
    \`\`\`bash
