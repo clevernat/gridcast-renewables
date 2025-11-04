@@ -200,9 +200,6 @@ export default function AssetConfigForm({
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
               Address
-              <span className="ml-2 text-xs text-green-600 font-normal">
-                ✓ Free autocomplete (no API key needed)
-              </span>
             </label>
             <div className="flex gap-2 relative">
               <div className="flex-1 relative">
