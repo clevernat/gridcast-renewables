@@ -38,7 +38,13 @@ export default function BatchAnalysis({
 
   const parseCSV = (text: string) => {
     const lines = text.split("\n").filter((line) => line.trim());
+    if (lines.length < 2) {
+      alert("CSV file must have at least a header row and one data row");
+      return;
+    }
+
     const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+    console.log("CSV Headers:", headers);
 
     const parsedLocations: BatchLocation[] = [];
 
@@ -49,33 +55,54 @@ export default function BatchAnalysis({
         row[header] = values[idx];
       });
 
+      console.log(`Row ${i}:`, row);
+
       // Parse location data
+      const lat = parseFloat(row.latitude || row.lat);
+      const lon = parseFloat(row.longitude || row.lon || row.long);
+
+      if (isNaN(lat) || isNaN(lon)) {
+        console.error(`Invalid coordinates for row ${i}:`, { lat, lon, row });
+        continue; // Skip this row
+      }
+
       const location: Location = {
-        latitude: parseFloat(row.latitude || row.lat),
-        longitude: parseFloat(row.longitude || row.lon || row.long),
+        latitude: lat,
+        longitude: lon,
         address: row.address || row.name || `Location ${i}`,
       };
 
       // Parse asset data
-      const assetType = (row.type || row.asset_type || "solar").toLowerCase();
+      const assetType = (row.type || row.asset_type || "solar")
+        .toLowerCase()
+        .trim();
       let asset: Asset;
 
-      if (assetType === "solar") {
+      if (assetType === "solar" || assetType === "pv") {
+        const capacity = parseFloat(row.dc_capacity || row.capacity || "7");
+        const losses = parseFloat(row.system_losses || row.losses || "14");
+
         asset = {
           type: "solar",
-          dcCapacity: parseFloat(row.dc_capacity || row.capacity || "7"),
-          systemLosses: parseFloat(row.system_losses || row.losses || "14"),
+          dcCapacity: isNaN(capacity) ? 7 : capacity,
+          systemLosses: isNaN(losses) ? 14 : losses,
         };
       } else {
+        const capacity = parseFloat(
+          row.rated_capacity || row.capacity || "1.5"
+        );
+        const height = parseFloat(row.hub_height || row.height || "80");
+        const cutIn = parseFloat(row.cut_in_speed || "3");
+        const rated = parseFloat(row.rated_speed || "12");
+        const cutOut = parseFloat(row.cut_out_speed || "25");
+
         asset = {
           type: "wind",
-          ratedCapacity: parseFloat(
-            row.rated_capacity || row.capacity || "1.5"
-          ),
-          hubHeight: parseFloat(row.hub_height || row.height || "80"),
-          cutInSpeed: parseFloat(row.cut_in_speed || "3"),
-          ratedSpeed: parseFloat(row.rated_speed || "12"),
-          cutOutSpeed: parseFloat(row.cut_out_speed || "25"),
+          ratedCapacity: isNaN(capacity) ? 1.5 : capacity,
+          hubHeight: isNaN(height) ? 80 : height,
+          cutInSpeed: isNaN(cutIn) ? 3 : cutIn,
+          ratedSpeed: isNaN(rated) ? 12 : rated,
+          cutOutSpeed: isNaN(cutOut) ? 25 : cutOut,
         };
       }
 
@@ -85,6 +112,15 @@ export default function BatchAnalysis({
         location,
         asset,
       });
+    }
+
+    console.log("Parsed locations:", parsedLocations);
+
+    if (parsedLocations.length === 0) {
+      alert(
+        "No valid locations found in CSV. Please check the format and ensure latitude/longitude columns are present."
+      );
+      return;
     }
 
     setLocations(parsedLocations);
@@ -114,6 +150,11 @@ export default function BatchAnalysis({
 
       try {
         // Fetch forecast
+        console.log(`Processing ${loc.name}:`, {
+          location: loc.location,
+          asset: loc.asset,
+        });
+
         const forecastRes = await fetch("/api/forecast", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -124,6 +165,7 @@ export default function BatchAnalysis({
         });
 
         const forecastData = await forecastRes.json();
+        console.log(`Response for ${loc.name}:`, forecastData);
 
         if (forecastData.success) {
           const totalEnergy = forecastData.data.outputs.reduce(
@@ -156,7 +198,7 @@ export default function BatchAnalysis({
         console.error(`Error processing ${loc.name}:`, error);
         batchResults.push({
           location: loc,
-          error: error.message,
+          error: error.message || "Unknown error",
         });
 
         setProgress((prev) => ({
@@ -386,7 +428,10 @@ California Solar,37.7749,-122.4194,solar,7`}
                       </td>
                       <td className="p-3 text-center">
                         {result.error ? (
-                          <span className="text-red-600 font-semibold">
+                          <span
+                            className="text-red-600 font-semibold cursor-help"
+                            title={result.error}
+                          >
                             ❌ Failed
                           </span>
                         ) : (
