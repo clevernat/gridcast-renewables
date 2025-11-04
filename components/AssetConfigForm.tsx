@@ -135,53 +135,92 @@ export default function AssetConfigForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 bg-white p-6 rounded-lg shadow-md"
+      className="space-y-6 backdrop-blur-lg bg-white/90 p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200/50 sticky top-24"
     >
-      <h2 className="text-2xl font-bold text-gray-900">Configure Your Asset</h2>
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-emerald-600 rounded-xl flex items-center justify-center">
+          <span className="text-xl">⚙️</span>
+        </div>
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+          Configure Asset
+        </h2>
+      </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
+        <div className="bg-gradient-to-r from-red-50 to-pink-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg shadow-md animate-fadeIn">
+          <div className="flex items-start gap-2">
+            <span className="text-lg">⚠️</span>
+            <span className="text-sm font-medium">{error}</span>
+          </div>
         </div>
       )}
 
       {/* Location Input */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800">Location</h3>
-
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            id="useCoordinates"
-            checked={useCoordinates}
-            onChange={(e) => setUseCoordinates(e.target.checked)}
-            className="rounded"
-          />
-          <label htmlFor="useCoordinates" className="text-sm text-gray-700">
-            Use GPS coordinates instead of address
-          </label>
+        <div className="flex items-center gap-2">
+          <span className="text-lg">📍</span>
+          <h3 className="text-lg font-bold text-gray-800">Location</h3>
         </div>
+
+        <label className="flex items-center space-x-3 cursor-pointer group">
+          <div className="relative">
+            <input
+              type="checkbox"
+              id="useCoordinates"
+              checked={useCoordinates}
+              onChange={(e) => setUseCoordinates(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-gradient-to-r peer-checked:from-blue-600 peer-checked:to-emerald-600 transition-all"></div>
+            <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-5 shadow-md"></div>
+          </div>
+          <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+            Use GPS coordinates
+          </span>
+        </label>
 
         {!useCoordinates ? (
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-semibold text-gray-700">
               Address
             </label>
-            <div className="flex space-x-2">
+            <div className="flex gap-2">
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="e.g., 1600 Amphitheatre Parkway, Mountain View, CA"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               />
               <button
                 type="button"
                 onClick={handleGeocodeAddress}
                 disabled={geocoding}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                className="px-5 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 disabled:from-gray-400 disabled:to-gray-400 disabled:scale-100 transition-all duration-300 text-sm whitespace-nowrap"
               >
-                {geocoding ? "Finding..." : "Find"}
+                {geocoding ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Finding
+                  </span>
+                ) : (
+                  "Find"
+                )}
               </button>
             </div>
           </div>
@@ -189,7 +228,7 @@ export default function AssetConfigForm({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Latitude
             </label>
             <input
@@ -198,12 +237,12 @@ export default function AssetConfigForm({
               value={latitude}
               onChange={(e) => setLatitude(e.target.value)}
               placeholder="e.g., 37.4224764"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Longitude
             </label>
             <input
@@ -212,7 +251,7 @@ export default function AssetConfigForm({
               value={longitude}
               onChange={(e) => setLongitude(e.target.value)}
               placeholder="e.g., -122.0842499"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               required
             />
           </div>
@@ -221,41 +260,53 @@ export default function AssetConfigForm({
 
       {/* Asset Type Selection */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-800">Asset Type</h3>
-        <div className="flex space-x-4">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">⚡</span>
+          <h3 className="text-lg font-bold text-gray-800">Asset Type</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => setAssetType("solar")}
-            className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+            className={`group relative py-4 px-4 rounded-xl font-semibold transition-all duration-300 overflow-hidden ${
               assetType === "solar"
-                ? "bg-yellow-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white shadow-lg shadow-yellow-500/50 scale-105"
+                : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700 hover:scale-105 hover:shadow-md"
             }`}
           >
-            ☀️ Solar
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-2xl">☀️</span>
+              <span className="text-sm">Solar</span>
+            </div>
           </button>
           <button
             type="button"
             onClick={() => setAssetType("wind")}
-            className={`flex-1 py-3 px-4 rounded-md font-medium transition-colors ${
+            className={`group relative py-4 px-4 rounded-xl font-semibold transition-all duration-300 overflow-hidden ${
               assetType === "wind"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-gradient-to-br from-blue-400 to-cyan-500 text-white shadow-lg shadow-blue-500/50 scale-105"
+                : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700 hover:scale-105 hover:shadow-md"
             }`}
           >
-            💨 Wind
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-2xl">💨</span>
+              <span className="text-sm">Wind</span>
+            </div>
           </button>
         </div>
       </div>
 
       {/* Asset Configuration */}
       {assetType === "solar" ? (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Solar System Configuration
-          </h3>
+        <div className="space-y-4 p-5 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl border-2 border-yellow-200">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">☀️</span>
+            <h3 className="text-lg font-bold text-gray-800">
+              Solar System Configuration
+            </h3>
+          </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               DC Capacity (kW)
             </label>
             <input
@@ -264,14 +315,15 @@ export default function AssetConfigForm({
               value={dcCapacity}
               onChange={(e) => setDcCapacity(e.target.value)}
               placeholder="e.g., 7"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all text-sm"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-600 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
               Typical residential: 5-10 kW, Commercial: 50-500 kW
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               System Losses (%)
             </label>
             <input
@@ -280,21 +332,25 @@ export default function AssetConfigForm({
               value={systemLosses}
               onChange={(e) => setSystemLosses(e.target.value)}
               placeholder="e.g., 14"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all text-sm"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-600 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
               Default 14% (includes inverter, wiring, soiling losses)
             </p>
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Wind Turbine Configuration
-          </h3>
+        <div className="space-y-4 p-5 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border-2 border-blue-200">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">💨</span>
+            <h3 className="text-lg font-bold text-gray-800">
+              Wind Turbine Configuration
+            </h3>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Rated Capacity (MW)
               </label>
               <input
@@ -303,11 +359,11 @@ export default function AssetConfigForm({
                 value={ratedCapacity}
                 onChange={(e) => setRatedCapacity(e.target.value)}
                 placeholder="e.g., 1.5"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Hub Height (m)
               </label>
               <input
@@ -316,48 +372,48 @@ export default function AssetConfigForm({
                 value={hubHeight}
                 onChange={(e) => setHubHeight(e.target.value)}
                 placeholder="e.g., 100"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Cut-in Speed (m/s)
+              <label className="block text-xs font-semibold text-gray-700 mb-2">
+                Cut-in (m/s)
               </label>
               <input
                 type="number"
                 step="0.1"
                 value={cutInSpeed}
                 onChange={(e) => setCutInSpeed(e.target.value)}
-                placeholder="e.g., 3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="3"
+                className="w-full px-3 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Rated Speed (m/s)
+              <label className="block text-xs font-semibold text-gray-700 mb-2">
+                Rated (m/s)
               </label>
               <input
                 type="number"
                 step="0.1"
                 value={ratedSpeed}
                 onChange={(e) => setRatedSpeed(e.target.value)}
-                placeholder="e.g., 12"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="12"
+                className="w-full px-3 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Cut-out Speed (m/s)
+              <label className="block text-xs font-semibold text-gray-700 mb-2">
+                Cut-out (m/s)
               </label>
               <input
                 type="number"
                 step="0.1"
                 value={cutOutSpeed}
                 onChange={(e) => setCutOutSpeed(e.target.value)}
-                placeholder="e.g., 25"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="25"
+                className="w-full px-3 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"
               />
             </div>
           </div>
@@ -367,9 +423,34 @@ export default function AssetConfigForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 px-4 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 disabled:bg-gray-400 transition-colors"
+        className="w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 disabled:from-gray-400 disabled:to-gray-400 disabled:scale-100 transition-all duration-300 flex items-center justify-center gap-2 text-base"
       >
-        {loading ? "Generating Forecast..." : "Generate Forecast"}
+        {loading ? (
+          <>
+            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Generating Forecast...
+          </>
+        ) : (
+          <>
+            <span>⚡</span>
+            Generate Forecast
+          </>
+        )}
       </button>
     </form>
   );
