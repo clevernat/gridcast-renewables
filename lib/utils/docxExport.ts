@@ -10,7 +10,6 @@ import {
   TableCell,
   WidthType,
   BorderStyle,
-  ImageRun,
   PageBreak,
   convertInchesToTwip,
 } from "docx";
@@ -23,58 +22,13 @@ import {
 /**
  * DOCX Export Utilities for Atmospheric Science Research
  *
- * Professional Word document reports with embedded charts and figures
- * Matches the comprehensive structure of the PDF report
+ * Professional Word document reports for editing and customization
+ * Matches the comprehensive structure of the PDF report (without embedded images)
  * Suitable for EB2-NIW green card applications and research documentation
+ *
+ * Note: Charts and visualizations are not embedded to allow for easy editing.
+ * Use PDF export for reports with embedded charts.
  */
-
-/**
- * Capture chart as base64 image
- * Attempts to capture any chart element by ID, returns null if not found or not rendered
- */
-async function captureChartAsImage(elementId: string): Promise<string | null> {
-  try {
-    const html2canvas = (await import("html2canvas")).default;
-    const element = document.getElementById(elementId);
-
-    if (!element) {
-      console.warn(`Element ${elementId} not found for chart capture`);
-      return null;
-    }
-
-    // Wait a bit for the chart to fully render
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    const canvas = await html2canvas(element, {
-      backgroundColor: "#ffffff",
-      scale: 2,
-      logging: false,
-      useCORS: true,
-      allowTaint: true,
-      foreignObjectRendering: false,
-      imageTimeout: 15000,
-    });
-
-    return canvas.toDataURL("image/png");
-  } catch (err) {
-    console.error(`Failed to capture ${elementId}:`, err);
-    return null;
-  }
-}
-
-/**
- * Convert base64 to Uint8Array for DOCX image embedding
- */
-function base64ToUint8Array(base64: string): Uint8Array {
-  // Remove the data URL prefix (e.g., "data:image/png;base64,")
-  const base64Data = base64.split(",")[1];
-  const binaryString = atob(base64Data);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
 
 /**
  * Create a styled table cell
@@ -618,70 +572,6 @@ export async function generateAtmosphericResearchDOCX(
       })
     );
 
-    // ========== CHARTS AND VISUALIZATIONS ==========
-    // Try to capture Power Forecast Chart
-    const chartImage = await captureChartAsImage("chart-container");
-    if (chartImage) {
-      try {
-        const imageData = base64ToUint8Array(chartImage);
-        sections.push(
-          new Paragraph({
-            text: "Power Forecast Chart",
-            heading: HeadingLevel.HEADING_2,
-            spacing: { before: 400, after: 200 },
-          }),
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: imageData,
-                transformation: {
-                  width: 600,
-                  height: 400,
-                },
-                type: "png",
-              }),
-            ],
-            spacing: { after: 300 },
-          })
-        );
-      } catch (err) {
-        console.error("Failed to embed chart image:", err);
-      }
-    }
-
-    // Try to capture National Energy Map
-    const mapImage = await captureChartAsImage("national-energy-map");
-    if (mapImage) {
-      try {
-        const imageData = base64ToUint8Array(mapImage);
-        sections.push(
-          new Paragraph({
-            children: [new PageBreak()],
-          }),
-          new Paragraph({
-            text: "National Energy Map",
-            heading: HeadingLevel.HEADING_2,
-            spacing: { before: 200, after: 200 },
-          }),
-          new Paragraph({
-            children: [
-              new ImageRun({
-                data: imageData,
-                transformation: {
-                  width: 600,
-                  height: 400,
-                },
-                type: "png",
-              }),
-            ],
-            spacing: { after: 300 },
-          })
-        );
-      } catch (err) {
-        console.error("Failed to embed map image:", err);
-      }
-    }
-
     // ========== LONG-TERM VIABILITY ANALYSIS ==========
     if (longTerm) {
       sections.push(
@@ -751,38 +641,6 @@ export async function generateAtmosphericResearchDOCX(
           spacing: { after: 300 },
         })
       );
-
-      // Try to capture Long-term Analysis Chart
-      const longTermChartImage = await captureChartAsImage(
-        "long-term-chart-container"
-      );
-      if (longTermChartImage) {
-        try {
-          const imageData = base64ToUint8Array(longTermChartImage);
-          sections.push(
-            new Paragraph({
-              text: "Long-Term Analysis Chart",
-              heading: HeadingLevel.HEADING_2,
-              spacing: { before: 400, after: 200 },
-            }),
-            new Paragraph({
-              children: [
-                new ImageRun({
-                  data: imageData,
-                  transformation: {
-                    width: 600,
-                    height: 400,
-                  },
-                  type: "png",
-                }),
-              ],
-              spacing: { after: 300 },
-            })
-          );
-        } catch (err) {
-          console.error("Failed to embed long-term chart image:", err);
-        }
-      }
     }
 
     // ========== CREATE AND SAVE DOCUMENT ==========
