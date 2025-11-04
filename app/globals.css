@@ -24,3 +24,95 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Input text color - dark and visible */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  color: #000000 !important; /* Pure black for typed text */
+  -webkit-text-fill-color: #000000 !important; /* Override webkit autofill */
+  caret-color: #000000 !important; /* Black cursor */
+  background-color: white !important;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  color: #000000 !important; /* Keep black when focused */
+  -webkit-text-fill-color: #000000 !important;
+  caret-color: #2563eb !important; /* Blue cursor when focused */
+}
+
+/* Placeholder text - gray and clearly different */
+input[type="text"]::placeholder,
+input[type="number"]::placeholder,
+input[type="email"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+  color: #9ca3af !important; /* Medium gray - clearly different from input text */
+  opacity: 1 !important;
+  font-weight: 400 !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+input[type="text"]:focus::placeholder,
+input[type="number"]:focus::placeholder,
+input[type="email"]:focus::placeholder,
+input[type="password"]:focus::placeholder,
+textarea:focus::placeholder {
+  color: #d1d5db !important; /* Lighter gray when focused */
+  opacity: 0.5 !important;
+  -webkit-text-fill-color: #d1d5db !important;
+}
+
+/* Dark mode input and placeholder styling */
+@media (prefers-color-scheme: dark) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="password"],
+  textarea,
+  select {
+    color: #ffffff !important; /* White text for dark backgrounds */
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    background-color: #1f2937 !important;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  textarea:focus,
+  select:focus {
+    color: #ffffff !important; /* Pure white when focused in dark mode */
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #60a5fa !important; /* Light blue cursor */
+  }
+
+  input[type="text"]::placeholder,
+  input[type="number"]::placeholder,
+  input[type="email"]::placeholder,
+  input[type="password"]::placeholder,
+  textarea::placeholder {
+    color: #6b7280 !important; /* Medium gray for dark mode */
+    opacity: 1 !important;
+    -webkit-text-fill-color: #6b7280 !important;
+  }
+
+  input[type="text"]:focus::placeholder,
+  input[type="number"]:focus::placeholder,
+  input[type="email"]:focus::placeholder,
+  input[type="password"]:focus::placeholder,
+  textarea:focus::placeholder {
+    color: #4b5563 !important;
+    opacity: 0.5 !important;
+    -webkit-text-fill-color: #4b5563 !important;
+  }
+}
