@@ -61,8 +61,20 @@ select {
   color: #3b82f6 !important; /* blue-500 - matches website gradient, vibrant and modern */
   -webkit-text-fill-color: #3b82f6 !important; /* Override webkit autofill */
   caret-color: #3b82f6 !important; /* blue-500 - matches text color */
-  background-color: white !important;
+  background-color: #ffffff !important; /* Pure white background */
+  background: #ffffff !important; /* Ensure white background */
   font-weight: 500;
+}
+
+/* Override autofill background */
+input[type="text"]:-webkit-autofill,
+input[type="number"]:-webkit-autofill,
+input[type="email"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #3b82f6 !important;
+  background-color: #ffffff !important;
+  background: #ffffff !important;
 }
 
 input[type="text"]:focus,
@@ -74,6 +86,8 @@ select:focus {
   color: #2563eb !important; /* blue-600 - slightly darker when focused */
   -webkit-text-fill-color: #2563eb !important;
   caret-color: #2563eb !important; /* blue-600 - matches focused text */
+  background-color: #ffffff !important; /* Keep white background when focused */
+  background: #ffffff !important;
 }
 
 /* Placeholder text - light gray with good contrast */
