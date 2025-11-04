@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import * as echarts from 'echarts';
-import { LongTermAnalysis as LongTermAnalysisType } from '@/types';
-import { formatEnergy, formatPercentage, formatNumber } from '@/lib/utils/formatters';
+import { useEffect, useRef } from "react";
+import * as echarts from "echarts";
+import { LongTermAnalysis as LongTermAnalysisType } from "@/types";
+import {
+  formatEnergy,
+  formatPercentage,
+  formatNumber,
+} from "@/lib/utils/formatters";
 
 interface LongTermAnalysisProps {
   analysis: LongTermAnalysisType;
@@ -22,97 +26,101 @@ export default function LongTermAnalysis({ analysis }: LongTermAnalysisProps) {
 
     const chart = chartInstance.current;
 
-    const months = analysis.monthlyAverages.map(m => m.monthName);
-    const production = analysis.monthlyAverages.map(m => m.averageProduction);
-    const capacityFactors = analysis.monthlyAverages.map(m => m.averageCapacityFactor);
+    const months = analysis.monthlyAverages.map((m) => m.monthName);
+    const production = analysis.monthlyAverages.map((m) => m.averageProduction);
+    const capacityFactors = analysis.monthlyAverages.map(
+      (m) => m.averageCapacityFactor
+    );
 
-    const isSolar = analysis.asset.type === 'solar';
-    const unit = isSolar ? 'kWh' : 'MWh';
+    const isSolar = analysis.asset.type === "solar";
+    const unit = isSolar ? "kWh" : "MWh";
 
     const option: echarts.EChartsOption = {
       title: {
-        text: 'Monthly Average Energy Production',
+        text: "Monthly Average Energy Production",
         subtext: `Based on historical weather data`,
-        left: 'center'
+        left: "center",
       },
       tooltip: {
-        trigger: 'axis',
+        trigger: "axis",
         axisPointer: {
-          type: 'cross'
+          type: "cross",
         },
         formatter: function (params: any) {
           let result = `<strong>${params[0].axisValue}</strong><br/>`;
           params.forEach((param: any) => {
             const value = param.value.toFixed(2);
-            const unit_str = param.seriesName.includes('Production') ? unit : '%';
+            const unit_str = param.seriesName.includes("Production")
+              ? unit
+              : "%";
             result += `${param.marker} ${param.seriesName}: ${value} ${unit_str}<br/>`;
           });
           return result;
-        }
+        },
       },
       legend: {
-        data: ['Average Production', 'Capacity Factor'],
-        top: 40
+        data: ["Average Production", "Capacity Factor"],
+        top: 40,
       },
       grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
+        left: "3%",
+        right: "4%",
+        bottom: "3%",
+        containLabel: true,
       },
       xAxis: {
-        type: 'category',
+        type: "category",
         data: months,
         axisLabel: {
-          rotate: 45
-        }
+          rotate: 45,
+        },
       },
       yAxis: [
         {
-          type: 'value',
+          type: "value",
           name: `Production (${unit})`,
-          position: 'left',
+          position: "left",
           axisLabel: {
-            formatter: '{value}'
-          }
+            formatter: "{value}",
+          },
         },
         {
-          type: 'value',
-          name: 'Capacity Factor (%)',
-          position: 'right',
+          type: "value",
+          name: "Capacity Factor (%)",
+          position: "right",
           axisLabel: {
-            formatter: '{value}%'
+            formatter: "{value}%",
           },
-          max: 100
-        }
+          max: 100,
+        },
       ],
       series: [
         {
-          name: 'Average Production',
-          type: 'bar',
+          name: "Average Production",
+          type: "bar",
           data: production,
           yAxisIndex: 0,
           itemStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: isSolar ? '#fbbf24' : '#60a5fa' },
-              { offset: 1, color: isSolar ? '#f59e0b' : '#3b82f6' }
-            ])
-          }
+              { offset: 0, color: isSolar ? "#fbbf24" : "#60a5fa" },
+              { offset: 1, color: isSolar ? "#f59e0b" : "#3b82f6" },
+            ]),
+          },
         },
         {
-          name: 'Capacity Factor',
-          type: 'line',
+          name: "Capacity Factor",
+          type: "line",
           data: capacityFactors,
           yAxisIndex: 1,
           smooth: true,
           itemStyle: {
-            color: '#10b981'
+            color: "#10b981",
           },
           lineStyle: {
-            width: 3
-          }
-        }
-      ]
+            width: 3,
+          },
+        },
+      ],
     };
 
     chart.setOption(option);
@@ -120,10 +128,10 @@ export default function LongTermAnalysis({ analysis }: LongTermAnalysisProps) {
     const handleResize = () => {
       chart.resize();
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [analysis]);
 
@@ -136,44 +144,59 @@ export default function LongTermAnalysis({ analysis }: LongTermAnalysisProps) {
     };
   }, []);
 
-  const isSolar = analysis.asset.type === 'solar';
-  const unit = isSolar ? 'kWh' : 'MWh';
+  const isSolar = analysis.asset.type === "solar";
+  const unit = isSolar ? "kWh" : "MWh";
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
+    <div
+      id="long-term-chart-container"
+      className="bg-white p-6 rounded-lg shadow-md space-y-6"
+    >
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Long-Term Viability Analysis</h2>
-        
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          Long-Term Viability Analysis
+        </h2>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
-            <div className="text-sm text-blue-600 font-medium">Annual Production</div>
+            <div className="text-sm text-blue-600 font-medium">
+              Annual Production
+            </div>
             <div className="text-2xl font-bold text-blue-900">
               {formatNumber(Math.round(analysis.annualProduction))} {unit}
             </div>
           </div>
-          
+
           <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
-            <div className="text-sm text-green-600 font-medium">Average Capacity Factor</div>
+            <div className="text-sm text-green-600 font-medium">
+              Average Capacity Factor
+            </div>
             <div className="text-2xl font-bold text-green-900">
               {formatPercentage(analysis.averageCapacityFactor)}
             </div>
           </div>
-          
+
           <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
-            <div className="text-sm text-purple-600 font-medium">Peak Month</div>
+            <div className="text-sm text-purple-600 font-medium">
+              Peak Month
+            </div>
             <div className="text-2xl font-bold text-purple-900">
-              {analysis.monthlyAverages.reduce((max, m) => 
-                m.averageProduction > max.averageProduction ? m : max
-              ).monthName}
+              {
+                analysis.monthlyAverages.reduce((max, m) =>
+                  m.averageProduction > max.averageProduction ? m : max
+                ).monthName
+              }
             </div>
           </div>
         </div>
       </div>
 
-      <div ref={chartRef} style={{ width: '100%', height: '400px' }} />
+      <div ref={chartRef} style={{ width: "100%", height: "400px" }} />
 
       <div className="mt-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Monthly Breakdown</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">
+          Monthly Breakdown
+        </h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -210,4 +233,3 @@ export default function LongTermAnalysis({ analysis }: LongTermAnalysisProps) {
     </div>
   );
 }
-

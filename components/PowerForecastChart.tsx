@@ -259,7 +259,7 @@ export default function PowerForecastChart({
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div id="chart-container" className="bg-white p-6 rounded-lg shadow-md">
       <div ref={chartRef} style={{ width: "100%", height: "550px" }} />
     </div>
   );

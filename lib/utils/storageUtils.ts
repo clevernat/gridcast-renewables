@@ -184,7 +184,6 @@ export function clearAllComparisonSlots(): void {
  * User preferences
  */
 export interface UserPreferences {
-  theme: "light" | "dark";
   defaultAssetType: "solar" | "wind";
   defaultYears: number;
   showTooltips: boolean;
@@ -193,7 +192,6 @@ export interface UserPreferences {
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
-  theme: "light",
   defaultAssetType: "solar",
   defaultYears: 5,
   showTooltips: true,

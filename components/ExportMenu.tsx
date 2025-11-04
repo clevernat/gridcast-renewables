@@ -20,6 +20,7 @@ import {
   generateAtmosphericResearchPDF,
   generateQuickSummaryPDF,
 } from "@/lib/utils/pdfExport";
+import { generateAtmosphericResearchDOCX } from "@/lib/utils/docxExport";
 import { generateAtmosphericResearchData } from "@/lib/utils/atmosphericResearch";
 
 interface ExportMenuProps {
@@ -99,6 +100,34 @@ export default function ExportMenu({
     }
   };
 
+  const handleGenerateDOCX = async () => {
+    if (!forecast) return;
+
+    setDownloading(true);
+    try {
+      const researchData =
+        forecast.meteorologicalData.length > 0
+          ? generateAtmosphericResearchData(
+              forecast.location,
+              forecast.meteorologicalData
+            )
+          : null;
+
+      await generateAtmosphericResearchDOCX(forecast, longTerm, researchData);
+      // Success - close the menu
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Error generating DOCX:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
+      alert(
+        `Failed to generate Word document.\n\n${errorMessage}\n\nPlease try again.`
+      );
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const hasData =
     (activeTab === "forecast" && forecast) ||
     (activeTab === "longterm" && longTerm);
@@ -146,6 +175,25 @@ export default function ExportMenu({
                     </div>
                     <div className="text-xs text-gray-500">
                       Comprehensive research report
+                    </div>
+                  </div>
+                </button>
+              )}
+
+              {/* DOCX Export */}
+              {forecast && (
+                <button
+                  onClick={handleGenerateDOCX}
+                  disabled={downloading}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors flex items-center gap-3 text-sm disabled:opacity-50"
+                >
+                  <span className="text-lg">📝</span>
+                  <div>
+                    <div className="font-semibold text-gray-900">
+                      {downloading ? "Generating..." : "Generate Word Document"}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      DOCX with charts & figures
                     </div>
                   </div>
                 </button>

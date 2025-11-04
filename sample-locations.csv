@@ -1,0 +1,12 @@
+name,latitude,longitude,type,capacity
+Phoenix Solar Farm,33.4484,-112.0740,solar,10
+Texas Wind Farm,32.4707,-100.4065,wind,2.5
+California Solar,36.7783,-119.4179,solar,15
+Iowa Wind,42.0308,-93.6319,wind,3.0
+Nevada Solar,36.1699,-115.1398,solar,12
+Kansas Wind,38.5266,-96.7265,wind,2.0
+Arizona Solar,34.0489,-111.0937,solar,8
+Oklahoma Wind,35.4676,-97.5164,wind,2.8
+New Mexico Solar,34.5199,-105.8701,solar,10
+Montana Wind,46.8797,-110.3626,wind,3.5
+

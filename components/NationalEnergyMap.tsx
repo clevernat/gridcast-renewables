@@ -635,6 +635,7 @@ export default function NationalEnergyMap({
       )}
 
       <div
+        id="national-energy-map"
         ref={mapContainer}
         className="w-full rounded-lg overflow-hidden"
         style={{ height: "600px" }}

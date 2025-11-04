@@ -16,8 +16,27 @@ export function exportForecastToCSV(forecast: PowerForecast): void {
 
   const rows = forecast.outputs.map((output, index) => {
     const meteo = forecast.meteorologicalData[index];
+    // Format timestamp properly - handle both string and Date objects
+    let formattedTime = output.time;
+    try {
+      const date = new Date(output.time);
+      if (!isNaN(date.getTime())) {
+        formattedTime = date.toLocaleString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        });
+      }
+    } catch (e) {
+      // If parsing fails, use the original string
+      formattedTime = output.time;
+    }
+
     return [
-      new Date(output.timestamp).toLocaleString(),
+      formattedTime,
       output.power.toFixed(2),
       meteo?.temperature?.toFixed(1) || "N/A",
       meteo?.solarIrradiance?.toFixed(1) || "N/A",
@@ -29,14 +48,21 @@ export function exportForecastToCSV(forecast: PowerForecast): void {
 
   const csvContent = [
     `# ${forecast.asset.type.toUpperCase()} Power Forecast`,
-    `# Location: ${forecast.location.address || `${forecast.location.latitude}, ${forecast.location.longitude}`}`,
+    `# Location: ${
+      forecast.location.address ||
+      `${forecast.location.latitude}, ${forecast.location.longitude}`
+    }`,
     `# Generated: ${new Date().toLocaleString()}`,
     "",
     headers.join(","),
     ...rows.map((row) => row.join(",")),
   ].join("\n");
 
-  downloadFile(csvContent, `forecast_${forecast.asset.type}_${Date.now()}.csv`, "text/csv");
+  downloadFile(
+    csvContent,
+    `forecast_${forecast.asset.type}_${Date.now()}.csv`,
+    "text/csv"
+  );
 }
 
 /**
@@ -59,12 +85,17 @@ export function exportLongTermToCSV(analysis: LongTermAnalysis): void {
 
   const csvContent = [
     `# Long-Term Analysis (${analysis.yearsAnalyzed} years)`,
-    `# Location: ${analysis.location.address || `${analysis.location.latitude}, ${analysis.location.longitude}`}`,
+    `# Location: ${
+      analysis.location.address ||
+      `${analysis.location.latitude}, ${analysis.location.longitude}`
+    }`,
     `# Asset Type: ${analysis.asset.type.toUpperCase()}`,
     `# Generated: ${new Date().toLocaleString()}`,
     "",
     `# Summary Statistics`,
-    `# Total Annual Production: ${analysis.totalAnnualProduction.toFixed(2)} ${analysis.asset.type === "solar" ? "kWh" : "MWh"}`,
+    `# Total Annual Production: ${analysis.totalAnnualProduction.toFixed(2)} ${
+      analysis.asset.type === "solar" ? "kWh" : "MWh"
+    }`,
     `# Average Capacity Factor: ${analysis.averageCapacityFactor.toFixed(2)}%`,
     "",
     headers.join(","),
@@ -81,7 +112,11 @@ export function exportLongTermToCSV(analysis: LongTermAnalysis): void {
 /**
  * Helper function to trigger file download
  */
-function downloadFile(content: string, filename: string, mimeType: string): void {
+function downloadFile(
+  content: string,
+  filename: string,
+  mimeType: string
+): void {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -134,7 +169,10 @@ export async function copyToClipboard(text: string): Promise<boolean> {
  * Generate summary text for sharing
  */
 export function generateSummaryText(forecast: PowerForecast): string {
-  const totalProduction = forecast.outputs.reduce((sum, output) => sum + output.power, 0);
+  const totalProduction = forecast.outputs.reduce(
+    (sum, output) => sum + output.power,
+    0
+  );
   const avgProduction = totalProduction / forecast.outputs.length;
   const maxProduction = Math.max(...forecast.outputs.map((o) => o.power));
   const minProduction = Math.min(...forecast.outputs.map((o) => o.power));
@@ -142,24 +180,37 @@ export function generateSummaryText(forecast: PowerForecast): string {
   return `
 GridCast Renewables - ${forecast.asset.type.toUpperCase()} Forecast Summary
 
-Location: ${forecast.location.address || `${forecast.location.latitude}, ${forecast.location.longitude}`}
+Location: ${
+    forecast.location.address ||
+    `${forecast.location.latitude}, ${forecast.location.longitude}`
+  }
 Generated: ${new Date().toLocaleString()}
 
 48-Hour Forecast Results:
-- Average Production: ${avgProduction.toFixed(2)} ${forecast.asset.type === "solar" ? "kW" : "MW"}
-- Peak Production: ${maxProduction.toFixed(2)} ${forecast.asset.type === "solar" ? "kW" : "MW"}
-- Minimum Production: ${minProduction.toFixed(2)} ${forecast.asset.type === "solar" ? "kW" : "MW"}
-- Total Energy: ${totalProduction.toFixed(2)} ${forecast.asset.type === "solar" ? "kWh" : "MWh"}
+- Average Production: ${avgProduction.toFixed(2)} ${
+    forecast.asset.type === "solar" ? "kW" : "MW"
+  }
+- Peak Production: ${maxProduction.toFixed(2)} ${
+    forecast.asset.type === "solar" ? "kW" : "MW"
+  }
+- Minimum Production: ${minProduction.toFixed(2)} ${
+    forecast.asset.type === "solar" ? "kW" : "MW"
+  }
+- Total Energy: ${totalProduction.toFixed(2)} ${
+    forecast.asset.type === "solar" ? "kWh" : "MWh"
+  }
 
 Asset Configuration:
-${forecast.asset.type === "solar" 
-  ? `- DC Capacity: ${forecast.asset.dcCapacity} kW
+${
+  forecast.asset.type === "solar"
+    ? `- DC Capacity: ${forecast.asset.dcCapacity} kW
 - System Losses: ${forecast.asset.systemLosses}%`
-  : `- Rated Capacity: ${forecast.asset.ratedCapacity} MW
+    : `- Rated Capacity: ${forecast.asset.ratedCapacity} MW
 - Hub Height: ${forecast.asset.hubHeight} m
 - Cut-in Speed: ${forecast.asset.cutInSpeed} m/s
 - Rated Speed: ${forecast.asset.ratedSpeed} m/s
-- Cut-out Speed: ${forecast.asset.cutOutSpeed} m/s`}
+- Cut-out Speed: ${forecast.asset.cutOutSpeed} m/s`
+}
 
 Generated by GridCast Renewables
 https://gridcast-renewables.vercel.app
@@ -169,7 +220,9 @@ https://gridcast-renewables.vercel.app
 /**
  * Generate long-term summary text
  */
-export function generateLongTermSummaryText(analysis: LongTermAnalysis): string {
+export function generateLongTermSummaryText(
+  analysis: LongTermAnalysis
+): string {
   const bestMonth = analysis.monthlyAverages.reduce((best, month) =>
     month.averageProduction > best.averageProduction ? month : best
   );
@@ -180,24 +233,35 @@ export function generateLongTermSummaryText(analysis: LongTermAnalysis): string 
   return `
 GridCast Renewables - Long-Term Analysis Summary
 
-Location: ${analysis.location.address || `${analysis.location.latitude}, ${analysis.location.longitude}`}
+Location: ${
+    analysis.location.address ||
+    `${analysis.location.latitude}, ${analysis.location.longitude}`
+  }
 Analysis Period: ${analysis.yearsAnalyzed} years
 Generated: ${new Date().toLocaleString()}
 
 Annual Performance:
-- Total Annual Production: ${analysis.totalAnnualProduction.toFixed(2)} ${analysis.asset.type === "solar" ? "kWh" : "MWh"}
+- Total Annual Production: ${analysis.totalAnnualProduction.toFixed(2)} ${
+    analysis.asset.type === "solar" ? "kWh" : "MWh"
+  }
 - Average Capacity Factor: ${analysis.averageCapacityFactor.toFixed(2)}%
 
 Seasonal Insights:
-- Best Month: ${bestMonth.month} (${bestMonth.averageProduction.toFixed(2)} ${analysis.asset.type === "solar" ? "kWh" : "MWh"})
-- Worst Month: ${worstMonth.month} (${worstMonth.averageProduction.toFixed(2)} ${analysis.asset.type === "solar" ? "kWh" : "MWh"})
+- Best Month: ${bestMonth.month} (${bestMonth.averageProduction.toFixed(2)} ${
+    analysis.asset.type === "solar" ? "kWh" : "MWh"
+  })
+- Worst Month: ${worstMonth.month} (${worstMonth.averageProduction.toFixed(
+    2
+  )} ${analysis.asset.type === "solar" ? "kWh" : "MWh"})
 
 Asset Configuration:
-${analysis.asset.type === "solar"
-  ? `- DC Capacity: ${analysis.asset.dcCapacity} kW
+${
+  analysis.asset.type === "solar"
+    ? `- DC Capacity: ${analysis.asset.dcCapacity} kW
 - System Losses: ${analysis.asset.systemLosses}%`
-  : `- Rated Capacity: ${analysis.asset.ratedCapacity} MW
-- Hub Height: ${analysis.asset.hubHeight} m`}
+    : `- Rated Capacity: ${analysis.asset.ratedCapacity} MW
+- Hub Height: ${analysis.asset.hubHeight} m`
+}
 
 Generated by GridCast Renewables
 https://gridcast-renewables.vercel.app
@@ -207,37 +271,54 @@ https://gridcast-renewables.vercel.app
 /**
  * Download map screenshot (requires html2canvas library)
  */
-export async function downloadMapScreenshot(elementId: string, filename: string): Promise<void> {
+export async function downloadMapScreenshot(
+  elementId: string,
+  filename: string
+): Promise<void> {
   try {
     // Dynamic import to avoid SSR issues
     const html2canvas = (await import("html2canvas")).default;
     const element = document.getElementById(elementId);
-    
+
     if (!element) {
-      throw new Error("Element not found");
+      throw new Error(`Element with ID "${elementId}" not found`);
     }
 
+    // Special handling for Mapbox maps
     const canvas = await html2canvas(element, {
       backgroundColor: "#ffffff",
       scale: 2, // Higher quality
       logging: false,
+      useCORS: true, // Enable CORS for external images
+      allowTaint: true, // Allow cross-origin images
+      foreignObjectRendering: false, // Better compatibility with canvas elements
+      imageTimeout: 15000, // Increase timeout for slow-loading images
     });
 
-    canvas.toBlob((blob) => {
-      if (blob) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
+    // Convert canvas to blob and download
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          resolve();
+        } else {
+          reject(new Error("Failed to create image blob"));
+        }
+      }, "image/png");
     });
   } catch (err) {
     console.error("Failed to capture screenshot:", err);
-    throw err;
+    throw new Error(
+      `Screenshot capture failed: ${
+        err instanceof Error ? err.message : "Unknown error"
+      }`
+    );
   }
 }
-
